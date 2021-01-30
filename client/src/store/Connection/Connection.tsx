@@ -149,6 +149,10 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			});
 	}, []);
 
+	React.useEffect(() => {
+		updateRooms();
+	}, []);
+
 	const contextValue = React.useMemo(
 		() => ({
 			connect,
@@ -159,7 +163,7 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			name,
 			changeName: setName,
 		}),
-		[connect, disconnect]
+		[rooms, name]
 	);
 	return (
 		<ConnectionStoreContext.Provider value={contextValue}>

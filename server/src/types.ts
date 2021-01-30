@@ -1,4 +1,16 @@
-export type FishType = "squid" | "shark" | "kingfish" | "seasnake";
+export type FishType =
+	| "AnglerFish"
+	| "DragonFish"
+	| "Fangtooth"
+	| "GiantIsopod"
+	| "GiantSquid"
+	| "GiantTubeWorm"
+	| "GulperEel"
+	| "Hagfish"
+	| "Nautilus"
+	| "SixgillShark"
+	| "SnipeEel"
+	| "VampireSquid";
 
 export type IInternalFish = {
 	type: FishType;

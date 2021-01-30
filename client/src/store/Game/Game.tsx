@@ -36,7 +36,7 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 		};
 	}, [arrowLeft, arrowRight, arrowDown, arrowUp]);
 
-	const control = useKeyPress(["Control"]);
+	const control = useKeyPress(["Control", "Alt"]);
 	const number1 = useKeyPress(["1"]);
 	const number2 = useKeyPress(["2"]);
 	const number3 = useKeyPress(["3"]);

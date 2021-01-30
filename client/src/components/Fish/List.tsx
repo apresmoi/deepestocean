@@ -1,0 +1,12 @@
+export { ReactComponent as AnglerFish } from "./images/anglerfish.svg";
+export { ReactComponent as DragonFish } from "./images/dragonfish.svg";
+export { ReactComponent as Fangtooth } from "./images/fangtooth.svg";
+export { ReactComponent as GiantIsopod } from "./images/giant-isopod.svg";
+export { ReactComponent as GiantSquid } from "./images/giant-squid.svg";
+export { ReactComponent as GiantTubeWorm } from "./images/giant-tube-worm.svg";
+export { ReactComponent as GulperEel } from "./images/gulper-eel.svg";
+export { ReactComponent as Hagfish } from "./images/hagfish.svg";
+export { ReactComponent as Nautilus } from "./images/nautilus.svg";
+export { ReactComponent as SixgillShark } from "./images/sixgill-shark.svg";
+export { ReactComponent as SnipeEel } from "./images/snipe-eel.svg";
+export { ReactComponent as VampireSquid } from "./images/vampire-squid.svg";

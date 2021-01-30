@@ -2,6 +2,8 @@ import { useFish } from "@hooks";
 import * as React from "react";
 import { IFish } from "store/Game/types";
 
+import * as Fishes from "./List";
+
 export function Fish() {
 	const [fish, setFish] = React.useState<IFish[]>();
 
@@ -12,11 +14,14 @@ export function Fish() {
 	if (!fish) return null;
 	return (
 		<>
-			{fish.map((f, i) => (
-				<g key={i} transform={`translate(${f.x}, ${f.y})`}>
-					<circle r={f.radius} />
-				</g>
-			))}
+			{fish.map((f, i) => {
+				const FishCompo = Fishes[f.type];
+				return (
+					<g key={i} transform={`translate(${f.x}, ${f.y})`}>
+						{<FishCompo />}
+					</g>
+				);
+			})}
 		</>
 	);
 }

@@ -61,9 +61,6 @@ app.post("/api/rooms", (req, res) => {
 	if (name && name.length > 5) {
 		const id = "/" + uuid();
 		matches[id] = new Room(id, name, io.of(id));
-		matches[id].allPlayersDisconnected = () => {
-			delete matches[id];
-		};
 		res.status(201).send({
 			id,
 			name,

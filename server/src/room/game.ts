@@ -10,8 +10,8 @@ const timeConstant = 25;
 enum DECKS {
 	NAVIGATION = 0,
 	LIGHTS = 1,
-	CANNON1 = 2,
-	CANNON2 = 3,
+	CANNONLEFT = 2,
+	CANNONRIGHT = 3,
 	TORPEDO = 4,
 	ENGINEERING = 5,
 }
@@ -40,7 +40,20 @@ const levelWalls = [
 	}),
 ];
 
-const fishTypes: FishType[] = ["squid", "shark", "kingfish", "seasnake"];
+const fishTypes: FishType[] = [
+	"AnglerFish",
+	"DragonFish",
+	"Fangtooth",
+	"GiantIsopod",
+	"GiantSquid",
+	"GiantTubeWorm",
+	"GulperEel",
+	"Hagfish",
+	"Nautilus",
+	"SixgillShark",
+	"SnipeEel",
+	"VampireSquid",
+];
 function getRandomFish(level: number): IInternalFish {
 	const size = Math.random() * 20 + 5;
 
@@ -50,7 +63,7 @@ function getRandomFish(level: number): IInternalFish {
 	const fish = Bodies.circle(x, y, size, {
 		mass: 1,
 	});
-	const type = fishTypes[Math.round(Math.random() * fishTypes.length)];
+	const type = fishTypes[Math.round(Math.random() * fishTypes.length - 1)];
 	return {
 		type,
 		body: fish,
@@ -164,8 +177,10 @@ export function Game() {
 	}
 
 	function playerDeckChange(id: string, deck: number) {
-		if (!Object.values(players).some((p) => p.deck === deck))
+		if (!Object.values(players).some((p) => p.deck === deck)) {
 			players[id].deck = deck;
+			triggerEvent("update", serialize());
+		}
 	}
 
 	function removePlayer(id: string) {

@@ -1,0 +1,35 @@
+.dialog {
+	display: flex;
+
+	position: absolute;
+	top: 0;
+
+	padding: 20px;
+
+	width: 760px;
+	height: 560px;
+
+	user-select: none;
+
+	opacity: 0;
+
+	font-size: 24px;
+	font-weight: bold;
+
+	background: black;
+	color: white;
+
+	transition: all 0.25s ease-in-out;
+
+	&.show {
+		opacity: 1;
+	}
+
+	div {
+		flex: max-content;
+
+		margin: auto;
+
+		width: max-content;
+	}
+}

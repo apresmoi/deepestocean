@@ -1,0 +1,41 @@
+.game-ui {
+	display: grid;
+	gap: 0px 0px;
+	grid-template-areas:
+		". . . ."
+		". . . ."
+		". deckcontrol deckcontrol .";
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr 60px;
+
+	position: absolute;
+	top: 0;
+
+	width: 100%;
+	height: 100%;
+	.deckcontrol {
+		display: flex;
+		grid-area: deckcontrol;
+
+		.deck {
+			display: flex;
+			align-items: center;
+
+			margin: auto;
+			padding: 2.5px;
+
+			width: 55px;
+			height: 55px;
+
+			border: 2px solid transparent;
+
+			user-select: none;
+
+			background: white;
+
+			&.selected {
+				border-color: green;
+			}
+		}
+	}
+}

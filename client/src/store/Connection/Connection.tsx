@@ -32,11 +32,18 @@ export function useConnection() {
 export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
 
+	const roomId = "/ao"
+
 	const socket = React.useRef(
-		io(socketURL, {
-			path: `/ws`,
-			autoConnect: false,
-		})
+		io(
+			`${window.location.protocol}//${
+				window.location.host.replace(":3000", "") + ":8081"
+			}${roomId}`,
+			{
+				path: `/ws`,
+				autoConnect: false,
+			}
+		)
 	);
 
 	React.useEffect(() => {

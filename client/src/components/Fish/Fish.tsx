@@ -1,16 +1,22 @@
+import { useFish } from "@hooks";
 import * as React from "react";
-import { FishTexture } from "@assets";
-import { Group } from "three";
+import { IFish } from "store/Game/types";
 
 export function Fish() {
-	const group = React.useRef<Group>();
+	const [fish, setFish] = React.useState<IFish[]>();
 
+	useFish((fish) => {
+		setFish(fish);
+	});
+
+	if (!fish) return null;
 	return (
-		<group ref={group} position={[0, 0, 0]}>
-			<mesh rotation={[Math.PI / 2, 0, 0]}>
-				<boxBufferGeometry args={[1026 / 80, 663 / 80, 0]} />
-				<meshBasicMaterial map={FishTexture} transparent />
-			</mesh>
-		</group>
+		<>
+			{fish.map((f, i) => (
+				<g key={i} transform={`translate(${f.x}, ${f.y})`}>
+					<circle r={f.radius} />
+				</g>
+			))}
+		</>
 	);
 }

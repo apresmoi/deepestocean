@@ -32,7 +32,7 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 	const direction = React.useMemo(() => {
 		return {
 			dx: -(arrowLeft ? 1 : 0) + (arrowRight ? 1 : 0),
-			dy: -(arrowDown ? 1 : 0) + (arrowUp ? 1 : 0),
+			dy: (arrowDown ? 1 : 0) - (arrowUp ? 1 : 0),
 		};
 	}, [arrowLeft, arrowRight, arrowDown, arrowUp]);
 

@@ -1,101 +1,79 @@
 import * as express from "express";
 import * as socketio from "socket.io";
+import * as body_parser from "body-parser";
 import { Server as HttpServer } from "http";
-import {
-	IConnectPayload,
-	IDeckChange,
-	IDirectionChangedPayload,
-	IKeyPressPayload,
-	IPlayer,
-	IShip,
-} from "./types";
-
+import { Server as HttpsServer } from "https";
+import { v4 as uuid } from "uuid";
+import { Room } from "./room/room";
 const app = express();
+app.use(body_parser.urlencoded({ extended: false }));
+app.use(body_parser.json());
+
+const ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
+
+console.log(
+	ENV_DEVELOPMENT ? "DEVELOPMENT ENVIRONMENT" : "PRODUCTION ENVIRONMENT"
+);
 
 const http = new HttpServer(app);
-const io = socketio(http, { path: "/ws" });
+const https = new HttpsServer(app);
 
-const players: { [id: string]: IPlayer } = {};
-const ship: IShip = { x: 0, y: 0 };
+const io = (() => {
+	return socketio(ENV_DEVELOPMENT ? http : https, { path: "/ws" });
+})();
 
-io.on("connect", (socket: IConnectPayload) => {
-	console.log(`player ${socket.id} connected`);
+const roomId = "/ao";
+const matches = {
+	[roomId]: new Room(roomId, "Always open", io.of(roomId)),
+};
 
-	addPlayer(socket.id, socket.name);
-
-	socket.emit("login_success", {
-		self: players[socket.id],
-		players: Object.values(players).filter((p) => p.id !== socket.id),
-	});
-	socket.broadcast.emit("player_join", players[socket.id]);
-
-	socket.on("request_direction_change", (payload: IDirectionChangedPayload) => {
-		console.log("request_direction_change", payload);
-		players[socket.id].dx = payload.dx;
-		players[socket.id].dy = payload.dy;
-	});
-
-	socket.on("request_key_press", (payload: IKeyPressPayload) => {
-		console.log("request_key_press", payload.code);
-	});
-
-	socket.on("request_deck_change", (payload: IDeckChange) => {
-		console.log("deck_change", payload.deck);
-		players[socket.id].deck = payload.deck;
-	});
-
-	socket.on("disconnect", () => {
-		console.log(`player ${socket.id} disconnected`);
-		socket.broadcast.emit("player_leave", { id: socket.id });
-		delete players[socket.id];
-	});
+//routes
+app.use((req, res, next) => {
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader(
+		"Access-Control-Allow-Methods",
+		"GET, POST, PUT, PATCH, DELETE"
+	);
+	res.setHeader(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept"
+	);
+	res.setHeader("Access-Control-Allow-Credentials", "true");
+	next();
 });
 
-const getAvailableDeck = () => {
-	const usedDecks = Object.values(players).map((v) => v.deck);
-	const availableDecks = [0, 1, 2, 3, 4].filter(
-		(deck) => !usedDecks.includes(deck)
+app.get("/api/rooms", function (req, res) {
+	res.status(200).send(
+		Object.keys(io.nsps)
+			.filter((id) => matches[id])
+			.map((id) => {
+				return {
+					id,
+					name: matches[id]._name,
+					players: Object.keys(io.nsps[id].connected).length,
+				};
+			})
 	);
-	const rnd = Math.round(Math.random() * (availableDecks.length - 1));
-	return availableDecks[rnd];
-};
+});
 
-const addPlayer = (id: string, name: string): void => {
-	players[id] = {
-		id,
-		name,
-		deck: getAvailableDeck(),
-		dx: 0,
-		dy: 0,
-	};
-};
-
-//deck 0 = stirring
-//deck 1
-//deck 2
-//deck 3
-//deck 4
-
-const updateShip = () => {
-	Object.values(players).forEach((player) => {
-		if (player.dx || player.dy) {
-			if (player.deck === 0) {
-				//stirring
-				console.log(player, ship);
-				ship.x += player.dx;
-				ship.y += player.dy;
-			}
-		}
+app.post("/api/rooms", (req, res) => {
+	const name: string = req.body.name as string;
+	if (name && name.length > 5) {
+		const id = "/" + uuid();
+		matches[id] = new Room(id, name, io.of(id));
+		matches[id].allPlayersDisconnected = () => {
+			delete matches[id];
+		};
+		res.status(201).send({
+			id,
+			name,
+		});
+		return;
+	}
+	res.status(500).send({
+		error: "Name min length 6",
 	});
-};
-
-setInterval(() => {
-	updateShip();
-	io.emit("update", {
-		players,
-		ship,
-	});
-}, 100);
+});
 
 http.listen(8081, function () {
 	console.log("started on port 8081");

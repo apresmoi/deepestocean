@@ -9,4 +9,11 @@ export type IPlayer = {
 export type IShip = {
 	x: number;
 	y: number;
+	radius: number;
+};
+
+export type IFish = {
+	x: number;
+	y: number;
+	radius: number;
 };

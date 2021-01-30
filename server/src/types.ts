@@ -1,3 +1,24 @@
+export type FishType = "squid" | "shark" | "kingfish" | "seasnake";
+
+export type IInternalFish = {
+	type: FishType;
+	body: Matter.Body;
+	mounted: boolean;
+	killed: boolean;
+};
+
+export type IObjective = {
+	type: FishType;
+	amount: number;
+};
+
+export type IFish = {
+	x: number;
+	y: number;
+	r: number;
+	type: string;
+};
+
 export type IConnectPayload = SocketIO.Socket & {
 	id: string;
 	name: string;
@@ -6,6 +27,7 @@ export type IConnectPayload = SocketIO.Socket & {
 export type IShip = {
 	x: number;
 	y: number;
+	r: number;
 };
 
 export type IPlayer = {

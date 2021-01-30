@@ -1,31 +1,17 @@
 import * as React from "react";
-import { SubmarineTexture } from "@assets";
-import { Group } from "three";
 import { useShip } from "@hooks";
-import { useFrame } from "react-three-fiber";
+import { IShip } from "store/Game/types";
 
 export function Ship() {
-	const group = React.useRef<Group>();
+	const [ship, setShip] = React.useState<IShip>();
 
 	useShip((ship) => {
-		if (group.current?.position) {
-			group.current.position.set(ship.x, 0, ship.y);
-		}
+		setShip(ship);
 	});
-
-	useFrame(({ camera }) => {
-		if (group.current?.position) {
-			camera.position.x = group.current.position.x;
-			camera.position.z = group.current.position.z;
-		}
-	});
-
+	if (!ship) return null;
 	return (
-		<group ref={group} position={[0, 0, 0]}>
-			<mesh rotation={[Math.PI / 2, 0, 0]}>
-				<boxBufferGeometry args={[1026 / 80, 663 / 80, 0]} />
-				<meshBasicMaterial map={SubmarineTexture} transparent />
-			</mesh>
-		</group>
+		<g transform={`translate(${ship.x}, ${ship.y})`}>
+			<circle r={ship.radius} fill="red" />
+		</g>
 	);
 }

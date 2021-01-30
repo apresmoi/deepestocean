@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
 import { Game, Home } from "./views";
 
-import { ConnectionStore, EventsStore, GameStore } from "@store";
+import { ConnectionStore, EventsStore } from "@store";
 
 function App() {
 	return (

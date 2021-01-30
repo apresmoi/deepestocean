@@ -15,6 +15,7 @@ import {
 type Room = {
 	name: string;
 	players: number;
+	id: string;
 };
 
 type IConnectionStoreContext = {

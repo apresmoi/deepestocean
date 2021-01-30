@@ -72,28 +72,35 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 	}, [deck, triggerEvent]);
 
 	React.useEffect(() => {
-		subscribeEvent("login_success", (payload: LoginSuccessPayload) => {
+		const handleLoginSuccess = (payload: LoginSuccessPayload) => {
 			setPlayers({
 				[payload.self.id]: payload.self,
 				...payload.players,
 			});
-		});
-		subscribeEvent("player_join", (payload: PlayerJoinPayload) => {
+		};
+		const handlePlayerJoin = (payload: PlayerJoinPayload) => {
 			setPlayers((players) => ({
 				...players,
 				[payload.id]: payload,
 			}));
-		});
-		subscribeEvent("player_leave", (payload: PlayerLeavePayload) => {
+		};
+		const handlePlayerLeave = (payload: PlayerLeavePayload) => {
 			setPlayers((players) => {
 				delete players[payload.id];
 				return players;
 			});
-		});
+		};
+		subscribeEvent("login_success", handleLoginSuccess);
+		subscribeEvent("player_join", handlePlayerJoin);
+		subscribeEvent("player_leave", handlePlayerLeave);
+		return () => {
+			unsubscribeEvent("login_success", handleLoginSuccess);
+			unsubscribeEvent("player_join", handlePlayerJoin);
+			unsubscribeEvent("player_leave", handlePlayerLeave);
+		};
 	}, []);
 
-
-	console.log(players)
+	console.log(players);
 	const contextValue = React.useMemo(
 		() => ({
 			stage,

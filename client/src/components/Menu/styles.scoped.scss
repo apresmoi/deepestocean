@@ -1,0 +1,25 @@
+.menu {
+	align-items: center;
+	border: 1px solid white;
+	display: flex;
+	flex-direction: column;
+	height: 500px;
+	justify-content: center;
+	margin: auto;
+	width: 300px;
+}
+
+.menu-button {
+	border: 1px solid white;
+	color: white;
+	height: 20px;
+	padding: 10px;
+	text-transform: uppercase;
+	width: 40px;
+	margin-top: 15px;
+	text-decoration: none;
+
+	&:hover {
+		cursor: pointer;
+	}
+}

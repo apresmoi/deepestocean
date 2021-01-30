@@ -5,6 +5,7 @@ import { GameCanvas } from "@components/GameCanvas";
 import { Ship } from "@components/Ship";
 import { GameUI } from "@components/GameUI";
 import { Fish } from "@components/Fish";
+import { GameStore } from "@store";
 
 export function Game() {
 	const [progress, setProgress] = React.useState(0);
@@ -21,17 +22,19 @@ export function Game() {
 	}, []);
 
 	return (
-		<Container>
-			<GameCanvas>
-				<Fish />
-				<Ship />
-			</GameCanvas>
-			<GameUI />
-			{/* <Progress
-				progress={progress}
-				timeout={0}
-				onDisappear={() => setLoaded(true)}
-			/> */}
-		</Container>
+		<GameStore>
+			<Container>
+				<GameCanvas>
+					<Fish />
+					<Ship />
+				</GameCanvas>
+				<GameUI />
+				{/* <Progress
+					progress={progress}
+					timeout={0}
+					onDisappear={() => setLoaded(true)}
+				/> */}
+			</Container>
+		</GameStore>
 	);
 }

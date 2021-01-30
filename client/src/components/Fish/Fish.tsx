@@ -16,6 +16,7 @@ export function Fish() {
 		<>
 			{fish.map((f, i) => {
 				const FishCompo = Fishes[f.type];
+				if (!FishCompo) return null;
 				return (
 					<g key={i} transform={`translate(${f.x}, ${f.y})`}>
 						{<FishCompo />}

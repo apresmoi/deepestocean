@@ -1,8 +1,8 @@
 import { IFish, IPlayer, IShip } from "../Game/types";
 
 export type LoginSuccessPayload = {
-	self: string;
-	player: IPlayer;
+	self: IPlayer;
+	players: { [id: string]: IPlayer };
 };
 
 export type PlayerJoinPayload = IPlayer;

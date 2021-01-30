@@ -1,15 +1,23 @@
 import * as React from "react";
 import { useKeyPress } from "@hooks";
 import { useEvents } from "../Events";
+import { IPlayer } from "./types";
+import {
+	LoginSuccessPayload,
+	PlayerJoinPayload,
+	PlayerLeavePayload,
+} from "store/Connection/types";
 
 type IGameStoreContext = {
 	stage: string;
 	changeStage: (stage: string) => void;
+	players: { [id: string]: IPlayer };
 };
 
 export const GameStoreContext = React.createContext<IGameStoreContext>({
 	stage: "stage-1",
 	changeStage: () => null,
+	players: {},
 });
 
 export function useGame() {
@@ -18,6 +26,8 @@ export function useGame() {
 
 export function GameStore(props: React.PropsWithChildren<{}>) {
 	const [stage, setStage] = React.useState("stage-1");
+
+	const [players, setPlayers] = React.useState<{ [id: string]: IPlayer }>({});
 
 	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
 
@@ -61,12 +71,36 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 		if (deck !== null) triggerEvent("deck_change", { deck: deck - 1 });
 	}, [deck, triggerEvent]);
 
+	React.useEffect(() => {
+		subscribeEvent("login_success", (payload: LoginSuccessPayload) => {
+			setPlayers({
+				[payload.self.id]: payload.self,
+				...payload.players,
+			});
+		});
+		subscribeEvent("player_join", (payload: PlayerJoinPayload) => {
+			setPlayers((players) => ({
+				...players,
+				[payload.id]: payload,
+			}));
+		});
+		subscribeEvent("player_leave", (payload: PlayerLeavePayload) => {
+			setPlayers((players) => {
+				delete players[payload.id];
+				return players;
+			});
+		});
+	}, []);
+
+
+	console.log(players)
 	const contextValue = React.useMemo(
 		() => ({
 			stage,
 			changeStage,
+			players,
 		}),
-		[stage, changeStage]
+		[stage, changeStage, players]
 	);
 
 	return (

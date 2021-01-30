@@ -15,7 +15,7 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 		game.addPlayer(socket.id, socket.name);
 
 		socket.emit("login_success", {
-			self: game.getPlayer[socket.id],
+			self: game.getPlayer(socket.id),
 			players: Object.values(game.players).filter((p) => p.id !== socket.id),
 		});
 		socket.broadcast.emit("player_join", game.players[socket.id]);

@@ -1,6 +1,8 @@
 import { useGameEnd } from "@hooks";
 import * as React from "react";
 
+import "./styles.scoped.scss";
+
 export function Cards() {
 	const gameEnd = useGameEnd();
 
@@ -102,6 +104,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					09
 				</text>
@@ -110,6 +113,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Fangtooth
 				</text>
@@ -308,6 +312,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					06
 				</text>
@@ -316,6 +321,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Gulper Eel
 				</text>
@@ -369,6 +375,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					10
 				</text>
@@ -377,6 +384,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Giant Squid
 				</text>
@@ -518,11 +526,12 @@ export function Cards() {
 					fill="#dc5a42"
 				/>
 				<text
-					transform="translate(803.77 894.27)"
+					transform="translate(799 894.27)"
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="Kalam-Bold, Kalam"
 					font-weight="700"
+					className="card-number"
 				>
 					11
 				</text>
@@ -619,6 +628,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Giant Tube Worm
 				</text>
@@ -659,6 +669,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					12
 				</text>
@@ -667,6 +678,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Giant Isopod
 				</text>
@@ -862,6 +874,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					05
 				</text>
@@ -870,6 +883,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Dragonfish
 				</text>
@@ -1094,6 +1108,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					03
 				</text>
@@ -1102,6 +1117,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Vampire Squid
 				</text>
@@ -1637,6 +1653,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					01
 				</text>
@@ -1645,6 +1662,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Nautilus
 				</text>
@@ -1930,6 +1948,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					08
 				</text>
@@ -1938,6 +1957,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Snipe Eel
 				</text>
@@ -2028,6 +2048,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					07
 				</text>
@@ -2036,6 +2057,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Sixgill Shark
 				</text>
@@ -2146,6 +2168,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					04
 				</text>
@@ -2154,6 +2177,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Hagfish
 				</text>
@@ -2247,6 +2271,7 @@ export function Cards() {
 					font-size="30"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-number"
 				>
 					02
 				</text>
@@ -2255,6 +2280,7 @@ export function Cards() {
 					font-size="22.97"
 					fill="#f1faee"
 					font-family="VT323-Regular, VT323"
+					className="card-title"
 				>
 					Anglerfish
 				</text>

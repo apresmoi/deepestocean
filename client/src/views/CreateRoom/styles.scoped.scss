@@ -15,8 +15,12 @@
 
 		margin: auto;
 
-		width: 300px;
-		height: 200px;
+		h1 {
+			width: 100%;
+			color: #fdf2ce;
+			font-size: 3rem;
+			text-align: center;
+		}
 
 		input {
 			margin-bottom: 20px;

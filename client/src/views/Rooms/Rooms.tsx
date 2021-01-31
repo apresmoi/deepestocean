@@ -32,7 +32,9 @@ export function Rooms() {
 		<Container>
 			<div className="rooms">
 				<div className="rooms-content">
-					<div className="table">
+				<img src="/images/instructions2.svg" height={36}/>
+					<h1>Choose a room</h1>
+						<div className="table">
 						<table>
 							<thead>
 								<tr>
@@ -50,6 +52,7 @@ export function Rooms() {
 							</tbody>
 						</table>
 					</div>
+					<p>or</p>
 					<button onClick={() => history.push("create-room")}>
 						Create New Room
 					</button>

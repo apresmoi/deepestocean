@@ -16,7 +16,9 @@ export function CreateRoom() {
 		<Container>
 			<div className="create-room">
 				<div className="create-room-content">
-					<input
+				<img src="/images/instructions2.svg" height={36}/>
+					<h1>Choose a room name</h1>
+						<input
 						type="text"
 						placeholder="Room Name"
 						onChange={(e) => setRoomName(e.target.value)}

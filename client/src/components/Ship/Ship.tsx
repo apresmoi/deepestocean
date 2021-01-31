@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useShip } from "@hooks";
 import { IShip } from "store/Game/types";
-import { transform } from "typescript";
+import "./styles.scoped.scss";
 
 export function Ship() {
 	const [ship, setShip] = React.useState<IShip>();
@@ -16,7 +16,10 @@ export function Ship() {
 	const lightsWidth = ship.state.lights.length * 1.2;
 
 	return (
-		<g transform={`translate(${ship.x}, ${ship.y})`}>
+		<g
+			className={["ship", ship.state.health <= 0 ? "exploded" : ""].join(" ")}
+			transform={`translate(${ship.x}, ${ship.y})`}
+		>
 			<g transform={`scale(0.25) translate(-480, -390)`}>
 				<svg
 					overflow="visible"

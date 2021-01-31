@@ -382,6 +382,9 @@ export function Game() {
 					collisionFilter: {
 						category: CollisionCategories.PROJECTILE,
 					},
+					plugin: {
+						isProjectile: true,
+					},
 				}
 			);
 
@@ -393,6 +396,9 @@ export function Game() {
 					isSensor: true,
 					collisionFilter: {
 						category: CollisionCategories.PROJECTILE,
+					},
+					plugin: {
+						isProjectile: true,
 					},
 				}
 			);
@@ -455,6 +461,9 @@ export function Game() {
 					collisionFilter: {
 						category: CollisionCategories.PROJECTILE,
 					},
+					plugin: {
+						isProjectile: true,
+					},
 				}
 			);
 			const projectile2 = Bodies.circle(
@@ -465,6 +474,9 @@ export function Game() {
 					isSensor: true,
 					collisionFilter: {
 						category: CollisionCategories.PROJECTILE,
+					},
+					plugin: {
+						isProjectile: true,
 					},
 				}
 			);
@@ -559,6 +571,9 @@ export function Game() {
 	function shouldUpdate() {
 		Engine.update(engine);
 		fishes.forEach((fish) => fish.updater());
+		if (shipState.health <= 0) {
+			return false;
+		}
 		checkObjetivesCompleted();
 		return updateShip() || world.bodies.some((x) => x.speed > 0);
 	}
@@ -612,15 +627,22 @@ export function Game() {
 			fishes[bodyA.plugin.index].invertDirection();
 		}
 		if (bodyA.plugin?.isMonster && bodyB.plugin?.isShip) {
-			// shipState.health -= 10;
+			shipState.health -= 10;
+			if (shipState.health <= 0) {
+				triggerEvent("game_end", serialize());
+			}
+		} else if (bodyA.plugin?.isMonster && bodyB.plugin?.isProjectile) {
 			const index = objectives.findIndex(
 				(obj) => obj.type === bodyA.plugin.type
 			);
 			if (index !== -1) {
 				objectives[index].done = true;
 				objectives[index].amount++;
-				fishes[bodyA.plugin.index].mounted = false;
-				World.remove(world, bodyA);
+				fishes[bodyA.plugin.index].killed = true;
+				setTimeout(() => {
+					fishes[bodyA.plugin.index].mounted = false;
+					World.remove(world, bodyA);
+				}, 1000);
 			}
 		}
 	}
@@ -641,6 +663,11 @@ export function Game() {
 			World.add(world, ship);
 			walls.forEach((wall) => World.add(world, wall));
 			levelWalls.forEach((wall) => World.add(world, wall));
+
+			shipState.health = 100;
+			fishes = [];
+			effects = [];
+			rewards = [];
 
 			changeLevel();
 			startTime = new Date();
@@ -681,6 +708,8 @@ export function Game() {
 			walls.forEach((wall) => World.remove(world, wall));
 			levelWalls.forEach((wall) => World.remove(world, wall));
 
+			shipState.health = 100;
+			Body.setPosition(ship, startPosition);
 			rewards = [];
 			objectives = [];
 			fishes = [];
@@ -720,6 +749,7 @@ export function Game() {
 					y: fish.body.position.y,
 					radius: fish.body.circleRadius,
 					type: fish.type,
+					killed: fish.killed,
 				})),
 		};
 	}

@@ -57,6 +57,7 @@ export type IFish = {
 	y: number;
 	radius: number;
 	type: string;
+	killed: boolean;
 };
 
 export type IConnectPayload = SocketIO.Socket & {

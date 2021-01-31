@@ -17,7 +17,12 @@
 
 		width: 500px;
 		height: 400px;
-
+		h1 {
+			width: 100%;
+			color: #fdf2ce;
+			font-size: 2.5rem;
+			text-align: center;
+		}
 		.table {
 			margin-bottom: 10px;
 
@@ -71,7 +76,7 @@
 					background: #ec3249;
 				}
 			}
-			button:last-child {
+			button + button {
 				background: #02c39a;
 				&:hover, &:focus {
 					background: #1fe8b8;

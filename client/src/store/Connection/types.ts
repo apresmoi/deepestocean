@@ -16,6 +16,7 @@ export type UpdatePayload = {
 	fishes: IFish[];
 	effects: IEffect[];
 	rewards: { type: FishType; amount: number; done: boolean }[];
+	self: { name: string }
 };
 
 export type DirectionChangedPayload = {

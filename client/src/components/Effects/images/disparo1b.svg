@@ -4,7 +4,7 @@
 	height="72.3"
 	overflow="visible"
 >
-	<g transform="translate(-5, 0) rotate(5)">
+	<g transform="translate(5, 0) rotate(-90)">
 		<linearGradient
 			id="SVGID_1_"
 			gradientUnits="userSpaceOnUse"

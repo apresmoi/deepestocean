@@ -16,9 +16,12 @@ export function Effects() {
 				return (
 					<g
 						key={e.id}
-						transform={`translate(${e.x}, ${e.y}) rotate(${e.angle}) scale(${1})`}
+						transform={`translate(${e.x}, ${e.y}) rotate(${
+							e.angle
+						}) scale(${1})`}
 					>
 						{<EffectComponent />}
+						{/* <circle fill="red" r={e.radius} /> */}
 					</g>
 				);
 			})}

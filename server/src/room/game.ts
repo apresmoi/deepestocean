@@ -367,12 +367,29 @@ export function Game() {
 	function fireLeftCannon() {
 		if (shipState.leftCannon.on) {
 			const angle = shipState.leftCannon.angle;
-			const projectile = Bodies.circle(ship.position.x, ship.position.y, 5, {
-				isSensor: true,
-				collisionFilter: {
-					category: CollisionCategories.PROJECTILE,
-				},
-			});
+			const projectile = Bodies.circle(
+				ship.position.x - 105,
+				ship.position.y - 15,
+				5,
+				{
+					isSensor: true,
+					collisionFilter: {
+						category: CollisionCategories.PROJECTILE,
+					},
+				}
+			);
+
+			const projectile2 = Bodies.circle(
+				ship.position.x - 95,
+				ship.position.y + 12,
+				5,
+				{
+					isSensor: true,
+					collisionFilter: {
+						category: CollisionCategories.PROJECTILE,
+					},
+				}
+			);
 
 			const effect: IInternalEffect = {
 				id: effectCount++,
@@ -381,21 +398,36 @@ export function Game() {
 				mounted: true,
 				angle,
 			};
+			const effect2: IInternalEffect = {
+				id: effectCount++,
+				type: "LEFTCANNONB",
+				body: projectile2,
+				mounted: true,
+				angle,
+			};
 
 			World.add(world, projectile);
+			World.add(world, projectile2);
 
 			Body.setVelocity(
 				projectile,
-				new Vector(-10, 0).rotate((angle * Math.PI) / 180)
+				new Vector(-10, 0).rotate(((angle + 40) * Math.PI) / 180)
+			);
+			Body.setVelocity(
+				projectile2,
+				new Vector(-10, 0).rotate(((angle - 55) * Math.PI) / 180)
 			);
 
 			setTimeout(() => {
 				effect.mounted = false;
-				effects = effects.filter((ef) => ef !== effect);
+				effect2.mounted = false;
+				effects = effects.filter((ef) => ef !== effect && ef !== effect2);
 				World.remove(world, projectile);
+				World.remove(world, projectile2);
 			}, 2000);
 
 			effects.push(effect);
+			effects.push(effect2);
 		}
 	}
 

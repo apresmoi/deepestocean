@@ -12,7 +12,11 @@ export type FishType =
 	| "SnipeEel"
 	| "VampireSquid";
 
-export type EffectType = "LEFTCANNON" | "RIGHTCANNON";
+export type EffectType =
+	| "LEFTCANNON"
+	| "LEFTCANNONB"
+	| "RIGHTCANNON"
+	| "RIGHTCANNONB";
 
 export type IInternalFish = {
 	id: number;

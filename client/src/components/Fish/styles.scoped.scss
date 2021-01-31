@@ -1,3 +1,11 @@
 .fish * {
+	opacity: 1;
+
 	transition: all 0.1s ease-out;
+}
+
+.killed {
+	opacity: 0;
+
+	transition: all 1s ease-out;
 }

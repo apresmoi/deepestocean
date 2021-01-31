@@ -21,36 +21,60 @@ export function UI() {
 			navigation: {
 				color: "",
 				disabled: false,
+				player: "",
 			},
 			cannonLeft: {
 				color: "",
 				disabled: !data?.ship.state.leftCannon.on,
+				player: "",
 			},
 			cannonRight: {
 				color: "",
 				disabled: !data?.ship.state.rightCannon.on,
+				player: "",
 			},
 			lights: {
 				color: "",
 				disabled: !data?.ship.state.lights.on,
+				player: "",
 			},
 			torpedos: {
 				color: "",
 				disabled: !data?.ship.state.torpedos.on,
+				player: "",
 			},
 			engineering: {
 				color: "",
 				disabled: false,
+				player: "",
 			},
 		};
 
 		playerList.forEach((player) => {
-			if (player.deck === 0) decks.navigation.color = player.color;
-			if (player.deck === 1) decks.cannonLeft.color = player.color;
-			if (player.deck === 2) decks.cannonRight.color = player.color;
-			if (player.deck === 3) decks.lights.color = player.color;
-			if (player.deck === 4) decks.torpedos.color = player.color;
-			if (player.deck === 5) decks.engineering.color = player.color;
+			if (player.deck === 0) {
+				decks.navigation.color = player.color;
+				decks.navigation.player = player.name;
+			}
+			if (player.deck === 1) {
+				decks.cannonLeft.color = player.color;
+				decks.cannonLeft.player = player.name;
+			}
+			if (player.deck === 2) {
+				decks.cannonRight.color = player.color;
+				decks.cannonRight.player = player.name;
+			}
+			if (player.deck === 3) {
+				decks.lights.color = player.color;
+				decks.lights.player = player.name;
+			}
+			if (player.deck === 4) {
+				decks.torpedos.color = player.color;
+				decks.torpedos.player = player.name;
+			}
+			if (player.deck === 5) {
+				decks.engineering.color = player.color;
+				decks.engineering.player = player.name;
+			}
 		});
 		return decks;
 	}, [playerList, data?.ship.state]);
@@ -176,7 +200,7 @@ export function UI() {
 
 			<g transform={`translate(-248, 0)`}>
 				<circle cx="328.87" cy="997.35" r="39.94" fill="#0b132b" />
-				<g opacity={decks.engineering.disabled ? 0.3 : 1}>
+				<g opacity={decks.navigation.disabled ? 0.3 : 1}>
 					<path
 						d="M367.31 997.35a38.3 38.3 0 11-.45-6 39.83 39.83 0 01.45 6 1.5 1.5 0 003 0 41.44 41.44 0 10-.53 6.6 44.17 44.17 0 00.53-6.6 1.5 1.5 0 00-3 0z"
 						fill="#fdf2ce"
@@ -213,7 +237,7 @@ export function UI() {
 					font-family="VT323-Regular, VT323"
 					textAnchor="middle"
 				>
-					you
+					{decks.navigation.player}
 				</text>
 			</g>
 			<g transform="translate(-124,0)">
@@ -235,7 +259,7 @@ export function UI() {
 					font-family="VT323-Regular, VT323"
 					textAnchor="middle"
 				>
-					mariana
+					{decks.torpedos.player}
 				</text>
 			</g>
 
@@ -258,7 +282,7 @@ export function UI() {
 					font-family="VT323-Regular, VT323"
 					textAnchor="middle"
 				>
-					lucho
+					{decks.cannonRight.player}
 				</text>
 			</g>
 			<g>
@@ -284,7 +308,7 @@ export function UI() {
 					font-family="VT323-Regular, VT323"
 					textAnchor="middle"
 				>
-					JC
+					{decks.cannonLeft.player}
 				</text>
 			</g>
 			<g transform={"translate(372, 0)"}>
@@ -310,7 +334,7 @@ export function UI() {
 					font-family="VT323-Regular, VT323"
 					textAnchor="middle"
 				>
-					alfonso
+					{decks.lights.player}
 				</text>
 			</g>
 			<g transform="translate(124, 0)">
@@ -364,7 +388,7 @@ export function UI() {
 					font-family="VT323-Regular, VT323"
 					textAnchor="middle"
 				>
-					mariana
+					{decks.engineering.player}
 				</text>
 			</g>
 			<g>

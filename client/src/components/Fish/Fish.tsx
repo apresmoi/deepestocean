@@ -16,6 +16,7 @@ export function Fish() {
 				return (
 					<g
 						key={f.id}
+						className={f.killed ? "killed" : ""}
 						transform={`translate(${f.x}, ${f.y}) scale(${f.radius / 50})`}
 					>
 						{<FishCompo />}

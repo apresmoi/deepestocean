@@ -41,7 +41,6 @@ export function Game() {
 						<Background3 />
 						<Fish />
 						<Effects />
-						<g style={{ clipPath: "url(#lights)" }}></g>
 						<Ship />
 					</GameCamera>
 					<UI />

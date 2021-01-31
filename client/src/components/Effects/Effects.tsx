@@ -20,8 +20,8 @@ export function Effects() {
 							e.angle
 						}) scale(${1})`}
 					>
-						{<EffectComponent />}
 						{/* <circle fill="red" r={e.radius} /> */}
+						{<EffectComponent />}
 					</g>
 				);
 			})}

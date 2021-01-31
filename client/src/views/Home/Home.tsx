@@ -1,33 +1,25 @@
-import React from "react";
-import { Container } from "@layout";
+import React from 'react'
 import { useHistory } from "react-router-dom";
-import { useConnection } from "@store";
-
 import "./styles.scoped.scss";
 
 export function Home() {
-	const history = useHistory();
-	const { name, changeName } = useConnection();
-
-	function handleOnClick() {
-		if (name) history.push("/rooms");
-	}
-
+	const history = useHistory()
 	return (
-		<Container>
-			<div className="login">
-				<div className="login-content">
-					<h1>Deepest Ocean</h1>
-					<input
-						type="text"
-						placeholder="Choose your name!"
-						onChange={(e) => changeName(e.target.value)}
-						value={name}
-						required
-					/>
-					<button onClick={() => handleOnClick()}>Find a room</button>
-				</div>
+		<div className="home">
+			<div className="home__title">Deepest Ocean</div>
+			<div className="home__label">
+				- You'll be assigned 3 random creatures to find in the ocean
 			</div>
-		</Container>
-	);
+			<img src="/images/instructions1.svg" />
+			<div className="home__label">
+				- Choose a room to play with your friends (max. 5)
+			</div>
+			<img src="/images/instructions2.svg" height={40}/>
+			<div className="home__label">
+				- Choose what part of the ship to drive
+			</div>
+			<img src="/images/instructions3.svg" height={80}/>
+			<div className="home__button" onClick={() => history.push('/login')}>start a game!</div>
+		</div>
+	)
 }

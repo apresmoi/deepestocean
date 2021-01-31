@@ -17,7 +17,7 @@ export function Home() {
 				</div>
 				<img src="/images/instructions2.svg" height={40}/>
 				<div className="home__label">
-					- Choose what part of the ship to drive
+					- Choose what part of the ship to drive (move with keyboard from 1 to 6)
 				</div>
 				<img src="/images/instructions3.svg" height={80}/>
 			</div>

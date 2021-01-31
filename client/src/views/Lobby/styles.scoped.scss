@@ -37,6 +37,7 @@
 			}
 
 			thead tr {
+				background: #efe8d6;
 				border-bottom: 1px solid black;
 			}
 
@@ -47,6 +48,8 @@
 
 			button {
 				cursor: pointer;
+				padding: 3px 15px 5px;
+				min-height: 48px;
 			}
 		}
 
@@ -55,15 +58,24 @@
 
 			width: 100%;
 			button {
+				color: #0c1326;
+				font-size: 1rem;
 				max-width: 50%;
-
+				padding: 3px 15px 5px;
+				min-height: 48px;
 				cursor: pointer;
 			}
 			button:first-child {
 				margin-right: auto;
+				&:hover, &:focus {
+					background: #ec3249;
+				}
 			}
 			button:last-child {
-				background: green;
+				background: #02c39a;
+				&:hover, &:focus {
+					background: #1fe8b8;
+				}
 			}
 		}
 	}

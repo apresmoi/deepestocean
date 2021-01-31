@@ -738,7 +738,6 @@ export function Game() {
 			walls.forEach((wall) => World.remove(world, wall));
 			levelWalls.forEach((wall) => World.remove(world, wall));
 
-			rewards = [];
 			objectives = [];
 			fishes = [];
 			effects = [];

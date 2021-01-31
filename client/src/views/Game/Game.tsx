@@ -13,12 +13,23 @@ import "./styles.scoped.scss";
 import { Background1, Background2, Background3 } from "@components/Background";
 import { Effects } from "@components/Effects";
 import { Cards } from "@components/Cards";
+import { useSound } from "@assets";
 
 export function Game() {
 	const { connected } = useConnection();
 	const history = useHistory();
 
 	const gameEnd = useGameEnd();
+
+	const ambientSound  = useSound("Ambient", true);
+
+	React.useEffect(() => {
+		console.log(ambientSound)
+		ambientSound?.play()
+		return () => {
+			ambientSound?.stop()
+		}
+	}, [ambientSound])
 
 	React.useEffect(() => {
 		if (!connected) history.push("/rooms");

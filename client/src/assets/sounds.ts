@@ -1,9 +1,9 @@
 import * as React from "react";
 
-const Terrain1 = new Audio("terrain1.mp3");
+const Ambient = new Audio("sounds/ambient.mp3");
 
 const sounds = {
-	Terrain1: Terrain1,
+	Ambient: Ambient,
 };
 
 interface AudioHelper {

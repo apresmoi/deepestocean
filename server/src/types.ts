@@ -66,6 +66,7 @@ export type IPlayer = {
 	deck: number;
 	dx: number;
 	dy: number;
+	isAdmin: boolean;
 };
 
 export type IDirectionChangedPayload = {
@@ -75,6 +76,10 @@ export type IDirectionChangedPayload = {
 
 export type IKeyPressPayload = {
 	code: string;
+};
+
+export type IKickPlayerPayload = {
+	id: string;
 };
 
 export type IDeckChange = {

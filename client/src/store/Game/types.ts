@@ -4,6 +4,8 @@ export type IPlayer = {
 	deck: number;
 	dx: number;
 	dy: number;
+
+	isAdmin: boolean;
 };
 
 export type IShipDecks = {

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useHistory } from "react-router-dom";
 import io from "socket.io-client";
+import { IPlayer } from "store/Game/types";
 import { useEvents } from "../Events";
 import {
 	PlayerJoinPayload,
@@ -10,6 +11,7 @@ import {
 	DirectionChangedPayload,
 	KeyPressPayload,
 	DeckChangePayload,
+	KickPlayerPayload,
 } from "./types";
 
 type Room = {
@@ -26,6 +28,7 @@ type IConnectionStoreContext = {
 	updateRooms: () => void;
 	createRoom: (name: string) => void;
 	changeName: (name: string) => void;
+	connected: boolean;
 };
 
 const socketURL = `${window.location.protocol}//${
@@ -41,6 +44,7 @@ export const ConnectionStoreContext = React.createContext<IConnectionStoreContex
 		updateRooms: () => null,
 		createRoom: () => null,
 		changeName: () => null,
+		connected: false,
 	}
 );
 
@@ -53,8 +57,14 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 
 	const history = useHistory();
 
+	const [connected, setConnected] = React.useState(false);
 	const [name, setName] = React.useState(localStorage.getItem("name") || "");
 	const [rooms, setRooms] = React.useState([]);
+
+	const changeName = React.useCallback((name: string) => {
+		localStorage.setItem("name", name);
+		setName(name);
+	}, []);
 
 	const socket = React.useRef<SocketIOClient.Socket>();
 
@@ -103,19 +113,28 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 				socket.current?.emit("request_deck_change", payload);
 			};
 
+			const handleKickPlayer = (payload: KickPlayerPayload) => {
+				console.log("client > server: request_kick_player", payload);
+				socket.current?.emit("request_kick_player", payload);
+			};
+
 			subscribeEvent("direction_change", handleDirectionChange);
 			subscribeEvent("key_press", handleKeyPress);
 			subscribeEvent("deck_change", handleDeckChange);
+			subscribeEvent("kick_player", handleKickPlayer);
 
 			socket.current?.connect();
+
+			setConnected(true);
 
 			return () => {
 				unsubscribeEvent("direction_change", handleDirectionChange);
 				unsubscribeEvent("key_press", handleKeyPress);
 				unsubscribeEvent("deck_change", handleDeckChange);
+				unsubscribeEvent("kick_player", handleKickPlayer);
 			};
 		},
-		[name]
+		[name, subscribeEvent, triggerEvent, unsubscribeEvent]
 	);
 
 	const disconnect = React.useCallback(() => {
@@ -150,13 +169,8 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 					}
 				});
 		},
-		[history]
+		[history, connect]
 	);
-
-	React.useEffect(() => {
-		updateRooms();
-		connect("/ao");
-	}, []);
 
 	const contextValue = React.useMemo(
 		() => ({
@@ -166,9 +180,19 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			updateRooms,
 			rooms,
 			name,
-			changeName: setName,
+			changeName,
+			connected,
 		}),
-		[rooms, name]
+		[
+			rooms,
+			name,
+			connect,
+			createRoom,
+			updateRooms,
+			disconnect,
+			changeName,
+			connected,
+		]
 	);
 	return (
 		<ConnectionStoreContext.Provider value={contextValue}>

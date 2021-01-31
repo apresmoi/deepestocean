@@ -24,7 +24,7 @@ const io = (() => {
 
 const roomId = "/ao";
 const matches = {
-	[roomId]: new Room(roomId, "Always open", io.of(roomId)),
+	[roomId]: Room(roomId, "Always open", io.of(roomId)),
 };
 
 //routes
@@ -49,7 +49,7 @@ app.get("/api/rooms", function (req, res) {
 			.map((id) => {
 				return {
 					id,
-					name: matches[id]._name,
+					name: matches[id].name,
 					players: Object.keys(io.nsps[id].connected).length,
 				};
 			})
@@ -60,7 +60,7 @@ app.post("/api/rooms", (req, res) => {
 	const name: string = req.body.name as string;
 	if (name && name.length > 5) {
 		const id = "/" + uuid();
-		matches[id] = new Room(id, name, io.of(id));
+		matches[id] = Room(id, name, io.of(id));
 		res.status(201).send({
 			id,
 			name,

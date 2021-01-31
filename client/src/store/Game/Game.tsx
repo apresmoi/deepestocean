@@ -1,39 +1,17 @@
 import * as React from "react";
 import { useKeyPress } from "@hooks";
 import { useEvents } from "../Events";
-import { IPlayer } from "./types";
-import {
-	LoginSuccessPayload,
-	PlayerJoinPayload,
-	PlayerLeavePayload,
-} from "store/Connection/types";
 
-type IGameStoreContext = {
-	stage: string;
-	changeStage: (stage: string) => void;
-	players: { [id: string]: IPlayer };
-};
+type IGameStoreContext = {};
 
-export const GameStoreContext = React.createContext<IGameStoreContext>({
-	stage: "stage-1",
-	changeStage: () => null,
-	players: {},
-});
+export const GameStoreContext = React.createContext<IGameStoreContext>({});
 
 export function useGame() {
 	return React.useContext(GameStoreContext);
 }
 
 export function GameStore(props: React.PropsWithChildren<{}>) {
-	const [stage, setStage] = React.useState("stage-1");
-
-	const [players, setPlayers] = React.useState<{ [id: string]: IPlayer }>({});
-
-	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
-
-	const changeStage = React.useCallback((stage: string) => {
-		setStage(stage);
-	}, []);
+	const { triggerEvent } = useEvents();
 
 	const arrowLeft = useKeyPress(["ArrowLeft", "a"]);
 	const arrowRight = useKeyPress(["ArrowRight", "d"]);
@@ -71,46 +49,7 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 		if (deck !== null) triggerEvent("deck_change", { deck: deck - 1 });
 	}, [deck, triggerEvent]);
 
-	React.useEffect(() => {
-		const handleLoginSuccess = (payload: LoginSuccessPayload) => {
-			console.log("success", payload);
-			setPlayers({
-				[payload.self.id]: payload.self,
-				...payload.players,
-			});
-		};
-		const handlePlayerJoin = (payload: PlayerJoinPayload) => {
-			console.log("join", payload);
-			setPlayers((players) => ({
-				...players,
-				[payload.id]: payload,
-			}));
-		};
-		const handlePlayerLeave = (payload: PlayerLeavePayload) => {
-			console.log(payload);
-			setPlayers((players) => {
-				delete players[payload.id];
-				return players;
-			});
-		};
-		subscribeEvent("login_success", handleLoginSuccess);
-		subscribeEvent("player_join", handlePlayerJoin);
-		subscribeEvent("player_leave", handlePlayerLeave);
-		return () => {
-			unsubscribeEvent("login_success", handleLoginSuccess);
-			unsubscribeEvent("player_join", handlePlayerJoin);
-			unsubscribeEvent("player_leave", handlePlayerLeave);
-		};
-	}, [subscribeEvent, unsubscribeEvent]);
-
-	const contextValue = React.useMemo(
-		() => ({
-			stage,
-			changeStage,
-			players,
-		}),
-		[stage, changeStage, players]
-	);
+	const contextValue = React.useMemo(() => ({}), []);
 
 	return (
 		<GameStoreContext.Provider value={contextValue}>

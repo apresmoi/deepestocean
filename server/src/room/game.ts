@@ -104,7 +104,7 @@ export function Game() {
 
 	let objectives: IObjective[] = [];
 
-	const players: { [id: string]: IPlayer } = {};
+	let players: { [id: string]: IPlayer } = {};
 
 	const ship = Bodies.circle(startPosition.x, startPosition.y, 60, {
 		mass: 10,
@@ -176,6 +176,7 @@ export function Game() {
 			deck: getAvailableDeck(),
 			dx: 0,
 			dy: 0,
+			isAdmin: Object.values(players).length === 0,
 		};
 	}
 
@@ -203,7 +204,15 @@ export function Game() {
 	}
 
 	function removePlayer(id: string) {
-		delete players[id];
+		if (players[id].isAdmin) {
+			Object.keys(players).forEach((id, i) => {
+				if (i === 0) players[id].isAdmin = true;
+			});
+		}
+		players = Object.keys(players).reduce((result, key) => {
+			if (key !== id) result[key] = players[key];
+			return result;
+		}, {});
 	}
 
 	function updateShip(): boolean {

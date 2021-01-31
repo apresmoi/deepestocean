@@ -27,3 +27,7 @@ export type KeyPressPayload = {
 export type DeckChangePayload = {
 	deck: number;
 };
+
+export type KickPlayerPayload = {
+	id: string;
+};

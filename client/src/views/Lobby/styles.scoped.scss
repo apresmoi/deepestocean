@@ -1,0 +1,70 @@
+.lobby {
+	display: flex;
+
+	align-content: center;
+
+	width: 100%;
+	height: 100%;
+
+	.lobby-content {
+		display: flex;
+
+		flex-direction: column;
+
+		align-items: center;
+
+		margin: auto;
+
+		width: 500px;
+		height: 400px;
+
+		.table {
+			margin-bottom: 10px;
+
+			width: 100%;
+			height: 400px;
+
+			background: white;
+		}
+		table {
+			width: 100%;
+
+			border-collapse: collapse;
+
+			th,
+			td {
+				padding: 5px;
+			}
+
+			thead tr {
+				border-bottom: 1px solid black;
+			}
+
+			th:first-child,
+			td:first-child {
+				width: 20px;
+			}
+
+			button {
+				cursor: pointer;
+			}
+		}
+
+		.button-container {
+			display: flex;
+
+			width: 100%;
+			button {
+				max-width: 50%;
+
+				cursor: pointer;
+			}
+			button:first-child {
+				margin-right: auto;
+			}
+			button:last-child {
+				background: green;
+			}
+		}
+	}
+}

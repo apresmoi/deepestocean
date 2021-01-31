@@ -23,8 +23,10 @@ export function usePlayers() {
 		};
 		const handlePlayerLeave = (payload: PlayerLeavePayload) => {
 			setPlayers((players) => {
-				delete players[payload.id];
-				return players;
+				return Object.keys(players).reduce((result, key) => {
+					if (key !== payload.id) result[key] = players[key];
+					return result;
+				}, {} as typeof players);
 			});
 		};
 		subscribeEvent("login_success", handleLoginSuccess);

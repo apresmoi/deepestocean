@@ -1,30 +1,32 @@
-import React, { useState } from 'react'
-import { useConnection } from '@store'
+import * as React from "react";
+import { useConnection } from "@store";
+import { Container } from "@layout";
+
+import "./styles.scoped.scss";
 
 export function CreateRoom() {
-	const { rooms, createRoom, connect } = useConnection()
-	const [roomName, setRoomName] = useState('')
+	const { createRoom } = useConnection();
+	const [roomName, setRoomName] = React.useState("");
 
 	function handleOnNewRoom() {
-		if (roomName)
-			createRoom(roomName)
+		if (roomName) createRoom(roomName);
 	}
 
 	return (
-		<div className='create-room'>
-			<div>
-						<input
-							type='text'
-							placeholder='Room Name'
-							onChange={(e) => setRoomName(e.target.value)}
-							value={roomName}
-							required
-							minLength={6}
-						/>
-						<div>
-							<button onClick={() => handleOnNewRoom()}>Create Room!</button>
-						</div>
+		<Container>
+			<div className="create-room">
+				<div className="create-room-content">
+					<input
+						type="text"
+						placeholder="Room Name"
+						onChange={(e) => setRoomName(e.target.value)}
+						value={roomName}
+						required
+						minLength={6}
+					/>
+					<button onClick={() => handleOnNewRoom()}>Create Room!</button>
+				</div>
 			</div>
-		</div>
-	)
+		</Container>
+	);
 }

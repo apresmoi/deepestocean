@@ -8,3 +8,17 @@
 
 	background: #073D5F;
 }
+.container:after {
+	background: url(textura-mar.png) repeat;
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: .7;
+	pointer-events: none;
+	mix-blend-mode: multiply;
+	width: 100%;
+	height: 100%;
+	z-index: 9;
+}

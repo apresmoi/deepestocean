@@ -1,6 +1,7 @@
 import { useUpdate } from "@hooks";
 import { colors } from "../../const";
 import * as React from "react";
+import "./styles.scoped.scss";
 
 import * as Fish from "../Fish/List";
 
@@ -73,7 +74,7 @@ export function UI() {
 			>
 				{data.ship.state.health}%
 			</text>
-			<path fill="#030c21" opacity=".7" d="M0 905.9h1918.53v185.96H0z" />
+			<path fill="#030c21" opacity=".7" d="M0 905.9h1920v185.96H0z" />
 			<rect
 				x="35.09"
 				y="160.24"
@@ -386,6 +387,7 @@ export function UI() {
 				font-size="26"
 				fill="#fdf2ce"
 				font-family="VT323-Regular, VT323"
+				className="list"
 			>
 				You need to find:
 			</text>
@@ -393,8 +395,8 @@ export function UI() {
 			{data.objectives.map((objetive, i) => {
 				const FishComponent = Fish[objetive.type];
 				return (
-					<g transform={`translate(30, ${700 + i * 70})`}>
-						<g transform="translate(10, -30) scale(0.4)">
+					<g transform={`translate(20, ${700 + i * 70})`}>
+						<g transform="translate(00, -30) scale(0.4)">
 							{FishComponent && <FishComponent />}
 						</g>
 						<text
@@ -402,7 +404,8 @@ export function UI() {
 							font-size="24"
 							fill="#fdf2ce"
 							font-family="VT323-Regular, VT323"
-						>
+							className="list"
+							>
 							{objetive.type}
 						</text>
 						{objetive.done && (

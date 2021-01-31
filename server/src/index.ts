@@ -23,12 +23,12 @@ const io = (() => {
 })();
 
 const roomId = "/ao";
-const defaultRoom = Room(roomId, "Always open", io.of(roomId));
-defaultRoom.subscribeEvent("room_empty", () => {
-	defaultRoom.reset();
-});
+// const defaultRoom = Room(roomId, "Always open", io.of(roomId));
+// defaultRoom.subscribeEvent("room_empty", () => {
+// 	defaultRoom.reset();
+// });
 const matches = {
-	[roomId]: defaultRoom,
+	// [roomId]: defaultRoom,
 };
 
 //routes

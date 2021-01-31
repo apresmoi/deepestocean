@@ -10,14 +10,41 @@ export function Ship() {
 	});
 
 	if (!ship) return null;
+
+	const lightsLength = (200 * ship.state.lights.length) / 100;
+	const lightsWidth = ship.state.lights.length * 1.2;
+
 	return (
 		<g transform={`translate(${ship.x}, ${ship.y})`}>
 			<g transform={`scale(0.4) translate(-400, -210)`}>
 				<svg
+					overflow="visible"
 					data-name="Layer 1"
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 481.14 252.44"
 				>
+					<g
+						transform={`translate(240, 125) rotate(${
+							(ship.state.lights.angle * 180) / Math.PI
+						}) translate(-240, -125)`}
+					>
+						<polygon
+							points={`
+							240,125 
+							${480 + lightsLength},${-150 + lightsWidth}
+							${480 + lightsLength},${252 + 150 - lightsWidth}
+							240,125`}
+							fill="yellow"
+						/>
+						<polygon
+							points={`
+							240,125 
+							${-0 - lightsLength},${-150 + lightsWidth}
+							${-0 - lightsLength},${252 + 150 - lightsWidth}
+							240,125`}
+							fill="yellow"
+						/>
+					</g>
 					<path
 						d="M387 106.2h46.4a2.08 2.08 0 011.61.46 2.12 2.12 0 01.35 1.38l.24 35.45q-28.17 1.44-56.4 1.24"
 						fill="#1c2541"

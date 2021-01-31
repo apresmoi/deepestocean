@@ -40,6 +40,24 @@ export type IShip = {
 	x: number;
 	y: number;
 	r: number;
+	state: {
+		leftCannon: {
+			on: boolean;
+			angle: number;
+		};
+		rightCannon: {
+			on: boolean;
+			angle: number;
+		};
+		lights: {
+			on: boolean;
+			angle: number;
+		};
+		torpedos: {
+			on: boolean;
+		};
+		health: number;
+	};
 };
 
 export type IPlayer = {

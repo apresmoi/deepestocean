@@ -9,9 +9,9 @@ const timeConstant = 25;
 
 enum DECKS {
 	NAVIGATION = 0,
-	LIGHTS = 1,
-	CANNONLEFT = 2,
-	CANNONRIGHT = 3,
+	CANNONLEFT = 1,
+	CANNONRIGHT = 2,
+	LIGHTS = 3,
 	TORPEDO = 4,
 	ENGINEERING = 5,
 }
@@ -111,6 +111,25 @@ export function Game() {
 		frictionAir: 0.1,
 		// frictionStatic: 0.002,
 	});
+	const shipState = {
+		leftCannon: {
+			on: true,
+			angle: 0,
+		},
+		rightCannon: {
+			on: true,
+			angle: 0,
+		},
+		lights: {
+			on: true,
+			angle: 0,
+			length: 100,
+		},
+		torpedos: {
+			on: true,
+		},
+		health: 100,
+	};
 
 	let fishes: IInternalFish[] = [];
 
@@ -187,7 +206,8 @@ export function Game() {
 		delete players[id];
 	}
 
-	function updateShip() {
+	function updateShip(): boolean {
+		let changed = false;
 		Object.values(players).forEach((player) => {
 			if (player.dx || player.dy) {
 				if (player.deck === DECKS.NAVIGATION) {
@@ -196,18 +216,32 @@ export function Game() {
 						ship.position,
 						new Vector(player.dx, player.dy).normalize().multiply(0.03)
 					);
+					changed = true;
+				} else if (player.deck === DECKS.LIGHTS) {
+					console.log("lights");
+					shipState.lights.angle += (player.dx * Math.PI) / 180;
+					shipState.lights.length -= player.dy * 2;
+					if (shipState.lights.length < 50) shipState.lights.length = 50;
+					else if (shipState.lights.length > 150) shipState.lights.length = 150;
+					changed = true;
+				} else if (player.deck === DECKS.CANNONLEFT) {
+					shipState.leftCannon.angle += (player.dx * Math.PI) / 180;
+					changed = true;
+				} else if (player.deck === DECKS.CANNONRIGHT) {
+					shipState.rightCannon.angle += (player.dx * Math.PI) / 180;
+					changed = true;
 				}
 			}
 		});
 		if (new Vector(ship.velocity.x, ship.velocity.y).module() < 0.03) {
 			Body.setVelocity(ship, new Vector(0, 0));
 		}
+		return changed;
 	}
 
 	function shouldUpdate() {
 		Engine.update(engine);
-		updateShip();
-		return world.bodies.some((x) => x.speed > 0);
+		return updateShip() || world.bodies.some((x) => x.speed > 0);
 	}
 
 	function timeElapsed(): number {
@@ -254,6 +288,7 @@ export function Game() {
 				x: ship.position.x,
 				y: ship.position.y,
 				radius: ship.circleRadius,
+				state: shipState,
 			},
 			players,
 			fishes: fishes.map((fish) => ({

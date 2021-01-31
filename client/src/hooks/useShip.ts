@@ -22,9 +22,10 @@ export function useShip(callback: (ship: IShip) => void) {
 					if (player.deck === 0) decks.navigation = colors[i];
 					if (player.deck === 1) decks.cannonLeft = colors[i];
 					if (player.deck === 2) decks.cannonRight = colors[i];
-					if (player.deck === 3) decks.engineering = colors[i];
-					if (player.deck === 4) decks.lights = colors[i];
-					if (player.deck === 5) decks.torpedos = colors[i];
+					if (player.deck === 3) decks.lights = colors[i];
+					if (player.deck === 4) decks.torpedos = colors[i];
+					if (player.deck === 5) decks.engineering = colors[i];
+
 				});
 				callback({ ...payload.ship, decks });
 			};

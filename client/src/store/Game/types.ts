@@ -20,6 +20,25 @@ export type IShip = {
 	y: number;
 	radius: number;
 	decks: IShipDecks;
+	state: {
+		leftCannon: {
+			on: boolean;
+			angle: number;
+		};
+		rightCannon: {
+			on: boolean;
+			angle: number;
+		};
+		lights: {
+			on: boolean;
+			length: number;
+			angle: number;
+		};
+		torpedos: {
+			on: boolean;
+		};
+		health: number;
+	};
 };
 
 export type FishType =

@@ -100,7 +100,6 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 		};
 	}, []);
 
-	console.log(players);
 	const contextValue = React.useMemo(
 		() => ({
 			stage,

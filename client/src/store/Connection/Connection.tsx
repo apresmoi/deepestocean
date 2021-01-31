@@ -133,26 +133,31 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			});
 	}, []);
 
-	const createRoom = React.useCallback((name: string) => {
-		fetch(`${socketURL}/api/rooms`, {
-			method: "POST",
-			body: JSON.stringify({ name: name }),
-			headers: {
-				"content-type": "application/json",
-			},
-		})
-			.then((response) => response.json())
-			.then((room) => {
-				if (room.id) {
-					connect(room.id);
-					history.push("/game");
-				}
-			});
-	}, []);
+	const createRoom = React.useCallback(
+		(name: string) => {
+			fetch(`${socketURL}/api/rooms`, {
+				method: "POST",
+				body: JSON.stringify({ name: name }),
+				headers: {
+					"content-type": "application/json",
+				},
+			})
+				.then((response) => response.json())
+				.then((room) => {
+					if (room.id) {
+						connect(room.id);
+						history.push("/game");
+					}
+				});
+		},
+		[history]
+	);
+
+	console.log(history)
 
 	React.useEffect(() => {
 		updateRooms();
-		connect("/ao")
+		connect("/ao");
 	}, []);
 
 	const contextValue = React.useMemo(

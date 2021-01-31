@@ -66,17 +66,17 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			});
 
 			socket.current?.on("login_success", (payload: LoginSuccessPayload) => {
-				// console.log("server > client: login_success", payload);
+				console.log("server > client: login_success", payload);
 				triggerEvent("login_success", payload);
 			});
 
 			socket.current?.on("player_join", (payload: PlayerJoinPayload) => {
-				// console.log("server > client: player_join", payload);
+				console.log("server > client: player_join", payload);
 				triggerEvent("player_join", payload);
 			});
 
 			socket.current?.on("player_leave", (payload: PlayerLeavePayload) => {
-				// console.log("server > client: player_leave", payload);
+				console.log("server > client: player_leave", payload);
 				triggerEvent("player_leave", payload);
 			});
 
@@ -152,8 +152,6 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 		},
 		[history]
 	);
-
-	console.log(history)
 
 	React.useEffect(() => {
 		updateRooms();

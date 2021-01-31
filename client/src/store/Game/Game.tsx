@@ -73,18 +73,21 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 
 	React.useEffect(() => {
 		const handleLoginSuccess = (payload: LoginSuccessPayload) => {
+			console.log("success", payload);
 			setPlayers({
 				[payload.self.id]: payload.self,
 				...payload.players,
 			});
 		};
 		const handlePlayerJoin = (payload: PlayerJoinPayload) => {
+			console.log("join", payload);
 			setPlayers((players) => ({
 				...players,
 				[payload.id]: payload,
 			}));
 		};
 		const handlePlayerLeave = (payload: PlayerLeavePayload) => {
+			console.log(payload);
 			setPlayers((players) => {
 				delete players[payload.id];
 				return players;
@@ -98,7 +101,7 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 			unsubscribeEvent("player_join", handlePlayerJoin);
 			unsubscribeEvent("player_leave", handlePlayerLeave);
 		};
-	}, []);
+	}, [subscribeEvent, unsubscribeEvent]);
 
 	const contextValue = React.useMemo(
 		() => ({

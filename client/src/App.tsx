@@ -1,12 +1,9 @@
 import * as React from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
-import { Game, Home } from "./views";
-
+import { Game, Home, CreateRoom, Lobby  } from "./views";
 import { ConnectionStore, EventsStore } from "@store";
 import { Rooms } from "@components/Rooms";
-import { CreateRoom } from "@components/CreateRoom";
-import { Lobby } from "@components/Lobby";
 import "./App.scss";
 
 function App() {

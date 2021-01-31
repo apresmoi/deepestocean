@@ -38,7 +38,8 @@
 
 			thead tr {
 				border-bottom: 1px solid black;
-			}
+				background: #efe8d6;
+				}
 
 			tbody tr:hover {
 				cursor: pointer;
@@ -53,7 +54,13 @@
 		}
 
 		button {
+			background: #02c39a;
 			max-width: 50%;
+			padding: 3px 15px 5px;
+			min-height: 48px;
+			&:hover, &:focus {
+				background: #1fe8b8;
+			}
 		}
 	}
 }

@@ -54,6 +54,7 @@ export function Ship() {
 						transform={`translate(240, 125) rotate(${
 							(ship.state.lights.angle * 1080) / Math.PI
 						}) translate(-240, -125)`}
+						opacity={ship.state.lights.on ? '1' : '0'}
 					>
 						<polygon
 							points={`

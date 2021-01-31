@@ -52,6 +52,8 @@ export function useConnection() {
 	return React.useContext(ConnectionStoreContext);
 }
 
+let socket: SocketIOClient.Socket;
+
 export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
 
@@ -66,84 +68,84 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 		setName(name);
 	}, []);
 
-	const socket = React.useRef<SocketIOClient.Socket>();
+	const handleDirectionChange = React.useCallback(
+		(payload: DirectionChangedPayload) => {
+			// console.log("client > server: request_direction_change", payload);
+			socket.emit("request_direction_change", payload);
+		},
+		[]
+	);
+	const handleKeyPress = React.useCallback((payload: KeyPressPayload) => {
+		// console.log("client > server: request_key_press", payload);
+		socket.emit("request_key_press", payload);
+	}, []);
+	const handleDeckChange = React.useCallback((payload: DeckChangePayload) => {
+		console.log("client > server: request_deck_change", payload);
+		socket.emit("request_deck_change", payload);
+	}, []);
+
+	const handleKickPlayer = React.useCallback((payload: KickPlayerPayload) => {
+		console.log("client > server: request_kick_player", payload);
+		socket.emit("request_kick_player", payload);
+	}, []);
+
+	const handleStartGame = React.useCallback(() => {
+		console.log("client > server: start_game");
+		socket.emit("start_game");
+	}, []);
 
 	const connect = React.useCallback(
 		(id: string) => {
-			socket.current = io(`${socketURL}${id}?name=${name}`, {
+			socket = io(`${socketURL}${id}?name=${name}`, {
 				path: `/ws`,
 				autoConnect: false,
 			});
 
-			socket.current?.on("login_success", (payload: LoginSuccessPayload) => {
+			socket.on("login_success", (payload: LoginSuccessPayload) => {
 				console.log("server > client: login_success", payload);
 				triggerEvent("login_success", payload);
 			});
 
-			socket.current?.on("player_join", (payload: PlayerJoinPayload) => {
+			socket.on("player_join", (payload: PlayerJoinPayload) => {
 				console.log("server > client: player_join", payload);
 				triggerEvent("player_join", payload);
 			});
 
-			socket.current?.on("player_leave", (payload: PlayerLeavePayload) => {
+			socket.on("player_leave", (payload: PlayerLeavePayload) => {
 				console.log("server > client: player_leave", payload);
 				triggerEvent("player_leave", payload);
 			});
 
-			socket.current?.on("update", (payload: UpdatePayload) => {
+			socket.on("update", (payload: UpdatePayload) => {
 				// console.log("server > client: update", payload);
-				if (socket.current) {
+				if (socket) {
 					triggerEvent("update", {
 						...payload,
-						self: payload.players[socket.current.id],
+						self: payload.players[socket.id],
 					});
 				}
 			});
-
-			socket.current?.on("disconnect", () => {
-				setConnected(false);
-			});
-
-			const handleDirectionChange = (payload: DirectionChangedPayload) => {
-				// console.log("client > server: request_direction_change", payload);
-				socket.current?.emit("request_direction_change", payload);
-			};
-			const handleKeyPress = (payload: KeyPressPayload) => {
-				// console.log("client > server: request_key_press", payload);
-				socket.current?.emit("request_key_press", payload);
-			};
-			const handleDeckChange = (payload: DeckChangePayload) => {
-				console.log("client > server: request_deck_change", payload);
-				socket.current?.emit("request_deck_change", payload);
-			};
-
-			const handleKickPlayer = (payload: KickPlayerPayload) => {
-				console.log("client > server: request_kick_player", payload);
-				socket.current?.emit("request_kick_player", payload);
-			};
 
 			subscribeEvent("direction_change", handleDirectionChange);
 			subscribeEvent("key_press", handleKeyPress);
 			subscribeEvent("deck_change", handleDeckChange);
 			subscribeEvent("kick_player", handleKickPlayer);
-
-			socket.current?.connect();
-
+			subscribeEvent("start_game", handleStartGame);
+			socket.connect();
 			setConnected(true);
-
-			return () => {
-				unsubscribeEvent("direction_change", handleDirectionChange);
-				unsubscribeEvent("key_press", handleKeyPress);
-				unsubscribeEvent("deck_change", handleDeckChange);
-				unsubscribeEvent("kick_player", handleKickPlayer);
-			};
+			return () => {};
 		},
 		[name, subscribeEvent, triggerEvent, unsubscribeEvent]
 	);
 
 	const disconnect = React.useCallback(() => {
+		socket?.disconnect();
+		unsubscribeEvent("direction_change", handleDirectionChange);
+		unsubscribeEvent("key_press", handleKeyPress);
+		unsubscribeEvent("deck_change", handleDeckChange);
+		unsubscribeEvent("kick_player", handleKickPlayer);
+		unsubscribeEvent("start_game", handleStartGame);
 		setConnected(false);
-		return socket.current?.disconnect();
 	}, []);
 
 	const updateRooms = React.useCallback(() => {

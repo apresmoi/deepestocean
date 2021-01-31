@@ -165,8 +165,7 @@ export function Game() {
 		const availableDecks = [0, 1, 2, 3, 4].filter(
 			(deck) => !usedDecks.includes(deck)
 		);
-		const rnd = Math.round(Math.random() * (availableDecks.length - 1));
-		return availableDecks[rnd];
+		return availableDecks[0];
 	}
 
 	function addPlayer(id: string, name: string) {
@@ -269,29 +268,43 @@ export function Game() {
 		} else if (level === 1) {
 			World.remove(world, levelWalls[1]);
 		}
+
 		const newFishes = new Array(50).fill(0).map((_) => getRandomFish(level));
 
 		newFishes.forEach((fish) => {
 			World.add(world, fish.body);
 			fish.mounted = true;
+			fishes.push(fish);
 		});
 
-		fishes = [...fishes, ...newFishes];
-		objectives = [...objectives, ...getRandomObjectives(newFishes)];
+		getRandomObjectives(newFishes).forEach((obj) => objectives.push(obj));
 	}
 
 	function init() {
+		console.log("init");
+
 		World.add(world, ship);
 		walls.forEach((wall) => World.add(world, wall));
 		levelWalls.forEach((wall) => World.add(world, wall));
+
 		changeLevel();
 		startTime = new Date();
+
 		interval = setInterval(() => {
 			if (shouldUpdate() || seconds !== timeElapsed()) {
 				seconds = timeElapsed();
 				triggerEvent("update", serialize());
 			}
 		}, timeConstant);
+	}
+
+	function reset() {
+		console.log("reset");
+		World.clear(world, false);
+		objectives = [];
+		fishes = [];
+		startTime = null;
+		clearInterval(interval);
 	}
 
 	function serialize() {
@@ -304,19 +317,20 @@ export function Game() {
 				state: shipState,
 			},
 			players,
-			fishes: fishes.map((fish) => ({
-				x: fish.body.position.x,
-				y: fish.body.position.y,
-				radius: fish.body.circleRadius,
-				type: fish.type,
-			})),
+			fishes: fishes
+				.filter((f) => f.mounted)
+				.map((fish) => ({
+					x: fish.body.position.x,
+					y: fish.body.position.y,
+					radius: fish.body.circleRadius,
+					type: fish.type,
+				})),
 		};
 	}
 
-	init();
-
 	return {
 		init,
+		reset,
 		getPlayers,
 		addPlayer,
 		getPlayer,

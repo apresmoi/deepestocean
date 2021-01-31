@@ -1,11 +1,18 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { useDisableGoBack, usePlayer, usePlayers, usePlayerState } from "@hooks";
+import {
+	useDisableGoBack,
+	usePlayer,
+	usePlayers,
+	usePlayerState,
+} from "@hooks";
 import { Container } from "@layout";
 
 import "./styles.scoped.scss";
 import { useConnection, useEvents } from "@store";
 import { IPlayer } from "store/Game/types";
+
+import debounce from 'lodash.debounce';
 
 export function Lobby() {
 	const { connected } = useConnection();
@@ -14,23 +21,27 @@ export function Lobby() {
 	const history = useHistory();
 	const { triggerEvent } = useEvents();
 
-	const handlePlay = () => {
+	const handlePlay = React.useCallback(debounce(() => {
+		triggerEvent("start_game");
 		history.push("/play");
-	};
+	}, 1000), [history, triggerEvent]);
 
-	const handleKickPlayer = (player: IPlayer) => {
-		triggerEvent("kick_player", player);
-	};
+	const handleKickPlayer = React.useCallback(
+		(player: IPlayer) => {
+			triggerEvent("kick_player", player);
+		},
+		[triggerEvent]
+	);
 
-	const handleExit = () => {
+	const handleExit = React.useCallback(() => {
 		history.push("/rooms");
-	};
+	}, [history]);
 
 	React.useEffect(() => {
 		if (!connected) history.push("/rooms");
 	}, [connected, history]);
 
-	useDisableGoBack()
+	useDisableGoBack();
 
 	return (
 		<Container>

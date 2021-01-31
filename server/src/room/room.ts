@@ -44,6 +44,11 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 	socket.on("connect", (socket: IConnectPayload) => {
 		console.log(`player ${socket.id} connected`);
 
+		if (Object.values(game.getPlayers()).length > 5) {
+			socket.disconnect(true);
+			return;
+		}
+
 		const { name } = socket.handshake.query;
 
 		game.addPlayer(socket.id, name);
@@ -61,6 +66,11 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 				game.playerChangeDirection(socket.id, payload);
 			}
 		);
+
+		socket.on("start_game", () => {
+			console.log("start_game");
+			game.init();
+		});
 
 		socket.on("request_kick_player", (payload: IKickPlayerPayload) => {
 			console.log("request_kick_player", payload.id);
@@ -98,5 +108,8 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 		subscribeEvent,
 		unsubscribeEvent,
 		triggerEvent,
+		reset: () => {
+			game.reset();
+		},
 	};
 }

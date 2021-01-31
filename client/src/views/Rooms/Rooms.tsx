@@ -17,6 +17,7 @@ export function Rooms() {
 	}
 
 	React.useEffect(() => {
+		console.log('disconnect')
 		interval.current = setInterval(() => {
 			updateRooms();
 		}, 10000);

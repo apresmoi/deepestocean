@@ -1,4 +1,11 @@
-import { Engine, World, Events, Body, Bodies } from "matter-js";
+import {
+	Engine,
+	World,
+	Events,
+	Body,
+	Bodies,
+	IEventCollision,
+} from "matter-js";
 import { Size, Vector } from "../math";
 import { FishType, IInternalFish, IObjective, IPlayer } from "../types";
 
@@ -44,29 +51,42 @@ const fishTypes: FishType[] = [
 	"GiantSquid", //300 - 600
 	"SnipeEel", // 300 - 600
 	"Nautilus", //700 - 800
-	"VampireSquid", //300 - 600
+	"VampireSquid", //300 - 600 //////
 	"Hagfish", //1800
 	"GulperEel", //500 - 2000
 	"DragonFish", //1200 - 2000
-	"GiantIsopod", //170 - 2200
+	"GiantIsopod", //170 - 2200  ///////////
 	"SixgillShark", //2500
 	"AnglerFish", //500 - 4000
 	"Fangtooth", //500 - 5000
 	"GiantTubeWorm", //5000
 ];
+const fishByLevel = [
+	fishTypes.slice(0, 4),
+	fishTypes.slice(4, 8),
+	fishTypes.slice(8),
+];
+
 function getRandomFish(level: number): IInternalFish {
 	const size = Math.random() * 20 + 5;
 
 	const x = Math.random() * mapSize.width;
-	const y = Math.random() * [800, 3800, 5800][level] + 100;
+	const y = Math.random() * [800, 1200, 2000][level] + [100, 1800, 4000][level];
+
+	const index = Math.round(Math.random() * (fishByLevel[level].length - 1));
+	const type = fishByLevel[level][index];
 
 	const fish = Bodies.circle(x, y, size, {
 		mass: 1,
 		isSensor: true,
 		frictionAir: 0.1,
 		inertia: Infinity,
+		plugin: {
+			type,
+			isMonster: true,
+		},
 	});
-	const type = fishTypes[Math.round(Math.random() * fishTypes.length - 1)];
+
 	return {
 		type,
 		body: fish,
@@ -85,13 +105,14 @@ function getRandomFish(level: number): IInternalFish {
 function getRandomObjectives(fishes) {
 	const availableTypes = fishes.map((fish) => fish.type);
 	const types = [];
-	while (types.length < 2) {
+	while (types.length < 3) {
 		const type = Math.round(Math.random() * availableTypes.length);
-		types.push(availableTypes[type]);
+		if (!types.includes(availableTypes[type])) types.push(availableTypes[type]);
 	}
 	return types.map((type) => ({
 		type,
-		amount: Math.round(Math.random() * 4) + 1,
+		amount: 1,
+		done: false,
 	}));
 }
 
@@ -103,7 +124,7 @@ export function Game() {
 	world.gravity.y = 0;
 	let interval: NodeJS.Timeout;
 
-	const level = 0;
+	let level = 0;
 
 	const eventSubscribers: {
 		[eventName: string]: Array<(callback: (...args: any) => void) => void>;
@@ -147,6 +168,9 @@ export function Game() {
 			mass: 10,
 			frictionAir: 0.1,
 			inertia: Infinity,
+			plugin: {
+				isShip: true,
+			},
 		}
 	);
 
@@ -292,6 +316,7 @@ export function Game() {
 	function shouldUpdate() {
 		Engine.update(engine);
 		fishes.forEach((fish) => fish.updater());
+		checkObjetivesCompleted();
 		return updateShip() || world.bodies.some((x) => x.speed > 0);
 	}
 
@@ -301,24 +326,63 @@ export function Game() {
 		return 0;
 	}
 
-	function changeLevel() {
-		World.remove(world, levelWalls[0]);
-		World.remove(world, levelWalls[1]);
-		// 	if (level === 1) {
-		// 	World.remove(world, levelWalls[0]);
-		// } else if (level === 2) {
-		// 	World.remove(world, levelWalls[1]);
-		// }
+	function checkObjetivesCompleted() {
+		console.log(objectives);
+		if (objectives.every((o) => o.done)) {
+			level += 1;
+			changeLevel();
+		}
+	}
 
-		const newFishes = new Array(10).fill(0).map((_) => getRandomFish(level));
+	function changeLevel() {
+		if (level === 1) {
+			World.remove(world, levelWalls[0]);
+		} else if (level === 2) {
+			World.remove(world, levelWalls[1]);
+		}
+
+		const newFishes = [];
+
+		while (newFishes.length < 10) {
+			const fish = getRandomFish(level);
+			if (fish.type) newFishes.push(fish);
+		}
 
 		newFishes.forEach((fish) => {
 			World.add(world, fish.body);
 			fish.mounted = true;
 			fishes.push(fish);
+			fishes[fishes.length - 1].body.plugin.index = fishes.length - 1;
 		});
 
 		getRandomObjectives(newFishes).forEach((obj) => objectives.push(obj));
+	}
+
+	function handleCollisionPair(bodyA: Matter.Body, bodyB: Matter.Body) {
+		if (
+			bodyA.isSensor &&
+			bodyA.plugin?.isMonster &&
+			!bodyB.isSensor &&
+			bodyB.plugin?.isShip
+		) {
+			const index = objectives.findIndex(
+				(obj) => obj.type === bodyA.plugin.type
+			);
+			if (index !== -1) {
+				objectives[index].done = true;
+				fishes[bodyA.plugin.index].mounted = false;
+				World.remove(world, bodyA);
+			}
+		}
+	}
+
+	function handleCollision(e: IEventCollision<any>) {
+		const { pairs } = e;
+		for (let i = 0, j = pairs.length; i != j; ++i) {
+			const pair = pairs[i];
+			handleCollisionPair(pair.bodyA, pair.bodyB);
+			handleCollisionPair(pair.bodyB, pair.bodyA);
+		}
 	}
 
 	function init() {
@@ -330,6 +394,8 @@ export function Game() {
 
 		changeLevel();
 		startTime = new Date();
+
+		Events.on(engine, "collisionStart", handleCollision);
 
 		interval = setInterval(() => {
 			if (shouldUpdate() || seconds !== timeElapsed()) {
@@ -357,6 +423,7 @@ export function Game() {
 				radius: ship.circleRadius,
 				state: shipState,
 			},
+			objectives,
 			players,
 			fishes: fishes
 				.filter((f) => f.mounted)

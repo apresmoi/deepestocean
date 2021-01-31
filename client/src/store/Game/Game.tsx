@@ -29,14 +29,16 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 	const number3 = useKeyPress(["3"]);
 	const number4 = useKeyPress(["4"]);
 	const number5 = useKeyPress(["5"]);
+	const number6 = useKeyPress(["6"]);
 	const deck = React.useMemo(() => {
 		if (number1) return 1;
 		else if (number2) return 2;
 		else if (number3) return 3;
 		else if (number4) return 4;
 		else if (number5) return 5;
+		else if (number6) return 6;
 		return null;
-	}, [number1, number2, number3, number4, number5]);
+	}, [number1, number2, number3, number4, number5, number6]);
 
 	React.useEffect(() => {
 		triggerEvent("direction_change", direction);

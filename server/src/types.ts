@@ -23,6 +23,7 @@ export type IInternalFish = {
 export type IObjective = {
 	type: FishType;
 	amount: number;
+	done: boolean;
 };
 
 export type IFish = {

@@ -1,15 +1,9 @@
-import { useFish } from "@hooks";
 import * as React from "react";
-import { IFish } from "store/Game/types";
-
+import { useFish } from "@hooks";
 import * as Fishes from "./List";
 
 export function Fish() {
-	const [fish, setFish] = React.useState<IFish[]>();
-
-	useFish((fish) => {
-		setFish(fish);
-	});
+	const fish = useFish();
 
 	if (!fish) return null;
 	return (

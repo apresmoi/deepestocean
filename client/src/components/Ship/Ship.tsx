@@ -24,6 +24,27 @@ export function Ship() {
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 481.14 252.44"
 				>
+					<clipPath
+						id="lights"
+						transform={`translate(${ship.x}, ${ship.y}) translate(40, -10) scale(0.67) rotate(${
+							(ship.state.lights.angle * 1080) / Math.PI
+						}) translate(-240, -125)`}
+					>
+						<polygon
+							points={`
+							240,125 
+							${480 + lightsLength},${-150 + lightsWidth}
+							${480 + lightsLength},${252 + 150 - lightsWidth}
+							240,125`}
+						/>
+						<polygon
+							points={`
+							240,125 
+							${-0 - lightsLength},${-150 + lightsWidth}
+							${-0 - lightsLength},${252 + 150 - lightsWidth}
+							240,125`}
+						/>
+					</clipPath>
 					<g
 						transform={`translate(240, 125) rotate(${
 							(ship.state.lights.angle * 1080) / Math.PI

@@ -76,7 +76,7 @@
 					background: #ec3249;
 				}
 			}
-			button:last-child {
+			button + button {
 				background: #02c39a;
 				&:hover, &:focus {
 					background: #1fe8b8;

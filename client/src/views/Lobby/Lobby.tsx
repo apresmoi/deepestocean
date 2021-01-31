@@ -12,6 +12,7 @@ export function Lobby() {
 	const players = usePlayers();
 	const player = usePlayerState();
 	const history = useHistory();
+<<<<<<< HEAD
 	const { triggerEvent } = useEvents();
 
 	const handlePlay = () => {
@@ -30,6 +31,10 @@ export function Lobby() {
 		if (!connected) history.push("/rooms");
 	}, [connected]);
 
+=======
+
+	const playersNames = Object.keys(players)
+>>>>>>> 0806f840e5c6ba7be5dec7b5fc95f451287ef38b
 	return (
 		<Container>
 			<div className="lobby">

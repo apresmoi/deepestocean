@@ -17,7 +17,7 @@ export function CreateRoom() {
 			<div className="create-room">
 				<div className="create-room-content">
 				<img src="/images/instructions2.svg" height={36}/>
-					<h1>Choose a room name</h1>
+					<h1>Choose a room name <small>(min 6 characters)</small></h1>
 						<input
 						type="text"
 						placeholder="Room Name"

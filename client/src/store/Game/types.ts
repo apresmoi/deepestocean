@@ -26,18 +26,22 @@ export type IShip = {
 		leftCannon: {
 			on: boolean;
 			angle: number;
+			power: number;
 		};
 		rightCannon: {
 			on: boolean;
 			angle: number;
+			power: number;
 		};
 		lights: {
 			on: boolean;
 			length: number;
 			angle: number;
+			power: number;
 		};
 		torpedos: {
 			on: boolean;
+			power: number;
 		};
 		health: number;
 	};

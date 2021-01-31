@@ -101,7 +101,7 @@ const fishByLevel = [
 ];
 
 function getRandomFish(level: number): IInternalFish {
-	const size = Math.random() * 40 + 10;
+	const size = Math.random() * 60 + 40;
 
 	const x = Math.random() * mapSize.width;
 	const y = Math.random() * [800, 1200, 2000][level] + [100, 1800, 4000][level];
@@ -119,6 +119,7 @@ function getRandomFish(level: number): IInternalFish {
 		plugin: {
 			type,
 			isMonster: true,
+			canDoDamage: true,
 		},
 	});
 
@@ -238,18 +239,22 @@ export function Game() {
 		leftCannon: {
 			on: true,
 			angle: 0,
+			power: 100,
 		},
 		rightCannon: {
 			on: true,
 			angle: 0,
+			power: 100,
 		},
 		lights: {
 			on: true,
 			angle: 0,
 			length: 100,
+			power: 100,
 		},
 		torpedos: {
 			on: false,
+			power: 100,
 		},
 		health: 100,
 	};
@@ -299,6 +304,31 @@ export function Game() {
 		return players;
 	}
 
+	function redistributePower() {
+		let redistributablePower = 0;
+
+		const leftCannon = shipState.leftCannon.on;
+		const rightCannon = shipState.rightCannon.on;
+		const lights = shipState.lights.on;
+		const torpedos = shipState.torpedos.on;
+
+		if (!leftCannon) redistributablePower += 100;
+		if (!rightCannon) redistributablePower += 100;
+		if (!lights) redistributablePower += 100;
+		if (!torpedos) redistributablePower += 100;
+
+		const systemsOn = [leftCannon, rightCannon, lights, torpedos].filter(
+			(x) => x
+		).length;
+
+		const equity = redistributablePower / (systemsOn || 1);
+
+		if (leftCannon) shipState.leftCannon.power = 100 + equity;
+		if (rightCannon) shipState.rightCannon.power = 100 + equity;
+		if (lights) shipState.lights.power = 100 + equity;
+		if (torpedos) shipState.torpedos.power = 100 + equity;
+	}
+
 	function playerKeyDown(id: string, code: string) {
 		console.log("KEYDOWN", id, code);
 
@@ -333,6 +363,7 @@ export function Game() {
 						triggerEvent("update", serialize());
 						break;
 				}
+				redistributePower();
 				break;
 		}
 	}
@@ -626,9 +657,20 @@ export function Game() {
 		if (bodyA.plugin?.isMonster) {
 			fishes[bodyA.plugin.index].invertDirection();
 		}
-		if (bodyA.plugin?.isMonster && bodyB.plugin?.isShip) {
+		if (
+			bodyA.plugin?.isMonster &&
+			bodyB.plugin?.isShip &&
+			bodyA.plugin?.canDoDamage
+		) {
+			bodyA.plugin.canDoDamage = false;
+
+			const timeout = setTimeout(() => {
+				bodyA.plugin.canDoDamage = true;
+				clearTimeout(timeout);
+			}, 2000);
+
 			if (!(shipState.health <= 0)) {
-				shipState.health -= 10;
+				shipState.health -= 5;
 			}
 			if (shipState.health <= 0) {
 				triggerEvent("game_end", serialize());
@@ -642,7 +684,9 @@ export function Game() {
 				objectives[index].amount++;
 				fishes[bodyA.plugin.index].killed = true;
 				setTimeout(() => {
-					fishes[bodyA.plugin.index].mounted = false;
+					if (fishes[bodyA.plugin.index]) {
+						fishes[bodyA.plugin.index].mounted = false;
+					}
 					World.remove(world, bodyA);
 				}, 1000);
 			}
@@ -670,6 +714,7 @@ export function Game() {
 			fishes = [];
 			effects = [];
 			rewards = [];
+			level = 0;
 
 			changeLevel();
 			startTime = new Date();

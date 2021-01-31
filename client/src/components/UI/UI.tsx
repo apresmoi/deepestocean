@@ -419,7 +419,7 @@ export function UI() {
 				const FishComponent = Fish[objetive.type];
 				return (
 					<g transform={`translate(20, ${700 + i * 70})`}>
-						<g transform="translate(00, -30) scale(0.4)">
+						<g transform="translate(40, 0) scale(0.4)">
 							{FishComponent && <FishComponent />}
 						</g>
 						<text

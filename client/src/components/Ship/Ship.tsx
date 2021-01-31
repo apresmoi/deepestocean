@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useShip } from "@hooks";
 import { IShip } from "store/Game/types";
+import { transform } from "typescript";
 
 export function Ship() {
 	const [ship, setShip] = React.useState<IShip>();
@@ -16,7 +17,7 @@ export function Ship() {
 
 	return (
 		<g transform={`translate(${ship.x}, ${ship.y})`}>
-			<g transform={`scale(0.4) translate(-400, -210)`}>
+			<g transform={`scale(0.25) translate(-480, -252)`}>
 				<svg
 					overflow="visible"
 					data-name="Layer 1"
@@ -34,7 +35,8 @@ export function Ship() {
 							${480 + lightsLength},${-150 + lightsWidth}
 							${480 + lightsLength},${252 + 150 - lightsWidth}
 							240,125`}
-							fill="yellow"
+							opacity={0.3}
+							fill="#ffc800"
 						/>
 						<polygon
 							points={`
@@ -42,7 +44,8 @@ export function Ship() {
 							${-0 - lightsLength},${-150 + lightsWidth}
 							${-0 - lightsLength},${252 + 150 - lightsWidth}
 							240,125`}
-							fill="yellow"
+							opacity={0.3}
+							fill="#ffc800"
 						/>
 					</g>
 					<path

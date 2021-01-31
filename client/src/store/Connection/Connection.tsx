@@ -155,7 +155,7 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 
 	React.useEffect(() => {
 		updateRooms();
-		// connect("/ao");
+		connect("/ao");
 	}, []);
 
 	const contextValue = React.useMemo(

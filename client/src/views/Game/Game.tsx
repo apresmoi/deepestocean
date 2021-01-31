@@ -2,10 +2,10 @@ import * as React from "react";
 import { Container } from "@layout";
 import { GameCanvas } from "@components/GameCanvas";
 import { Ship } from "@components/Ship";
-import { GameUI } from "@components/GameUI";
 import { Fish } from "@components/Fish";
 import { GameStore } from "@store";
 import { GameCamera } from "@components/GameCamera";
+import { UI } from "@components/UI";
 
 export function Game() {
 	return (
@@ -16,8 +16,8 @@ export function Game() {
 						<Fish />
 						<Ship />
 					</GameCamera>
+					<UI />
 				</GameCanvas>
-				<GameUI />
 			</Container>
 		</GameStore>
 	);

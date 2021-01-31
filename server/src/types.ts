@@ -18,6 +18,7 @@ export type IInternalFish = {
 	mounted: boolean;
 	killed: boolean;
 	updater: () => void;
+	invertDirection: () => void;
 };
 
 export type IObjective = {

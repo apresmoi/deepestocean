@@ -13,10 +13,10 @@ export function useGame() {
 export function GameStore(props: React.PropsWithChildren<{}>) {
 	const { triggerEvent } = useEvents();
 
-	const arrowLeft = useKeyPress(["ArrowLeft", "a"]);
-	const arrowRight = useKeyPress(["ArrowRight", "d"]);
-	const arrowUp = useKeyPress(["ArrowUp", "w"]);
-	const arrowDown = useKeyPress(["ArrowDown", "s"]);
+	const arrowLeft = useKeyPress(["ArrowLeft", "a", "A"]);
+	const arrowRight = useKeyPress(["ArrowRight", "d", "D"]);
+	const arrowUp = useKeyPress(["ArrowUp", "w", "W"]);
+	const arrowDown = useKeyPress(["ArrowDown", "s", "S"]);
 	const direction = React.useMemo(() => {
 		return {
 			dx: -(arrowLeft ? 1 : 0) + (arrowRight ? 1 : 0),
@@ -39,6 +39,12 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 		else if (number6) return 6;
 		return null;
 	}, [number1, number2, number3, number4, number5, number6]);
+
+	useKeyPress(["z", "Z"], () => triggerEvent("key_press", { code: "Z" }));
+	useKeyPress(["x", "X"], () => triggerEvent("key_press", { code: "X" }));
+	useKeyPress(["c", "C"], () => triggerEvent("key_press", { code: "C" }));
+	useKeyPress(["v", "V"], () => triggerEvent("key_press", { code: "V" }));
+	useKeyPress([" "], () => triggerEvent("key_press", { code: "SPACE" }));
 
 	React.useEffect(() => {
 		triggerEvent("direction_change", direction);

@@ -1,30 +1,39 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import {
-	useDisableGoBack,
-	usePlayer,
-	usePlayers,
-	usePlayerState,
-} from "@hooks";
+import { useDisableGoBack, usePlayer, usePlayers } from "@hooks";
 import { Container } from "@layout";
 
 import "./styles.scoped.scss";
 import { useConnection, useEvents } from "@store";
 import { IPlayer } from "store/Game/types";
 
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
 
 export function Lobby() {
 	const { connected } = useConnection();
 	const players = usePlayers();
-	const player = usePlayerState();
+	const self = usePlayer();
 	const history = useHistory();
-	const { triggerEvent } = useEvents();
+	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
 
-	const handlePlay = React.useCallback(debounce(() => {
-		triggerEvent("start_game");
-		history.push("/play");
-	}, 1000), [history, triggerEvent]);
+	React.useEffect(() => {
+		console.log('init')
+		const handleGameStart = () => {
+			history.push("/play");
+		};
+		subscribeEvent("game_started", handleGameStart);
+		return () => {
+			unsubscribeEvent("game_started", handleGameStart);
+		};
+	}, [subscribeEvent, unsubscribeEvent, history]);
+
+	const handlePlay = React.useCallback(
+		debounce(() => {
+			triggerEvent("start_game");
+			history.push("/play");
+		}, 1000),
+		[history, triggerEvent]
+	);
 
 	const handleKickPlayer = React.useCallback(
 		(player: IPlayer) => {
@@ -59,11 +68,11 @@ export function Lobby() {
 								{Object.values(players).map((player, i) => (
 									<tr key={i}>
 										<td>
-											{i !== 0 && (
+											{self?.isAdmin && i > 0 ? (
 												<button onClick={() => handleKickPlayer(player)}>
 													x
 												</button>
-											)}
+											) : null}
 										</td>
 										<td>{player.name}</td>
 									</tr>
@@ -73,7 +82,7 @@ export function Lobby() {
 					</div>
 					<div className="button-container">
 						<button onClick={handleExit}>Exit</button>
-						{player?.isAdmin && <button onClick={handlePlay}>Play!</button>}
+						{self?.isAdmin && <button onClick={handlePlay}>Play!</button>}
 					</div>
 				</div>
 			</div>

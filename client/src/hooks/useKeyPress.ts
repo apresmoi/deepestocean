@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export function useKeyPress(key: string | string[]) {
+export function useKeyPress(key: string | string[], action?: () => void) {
 	const [isDown, set] = React.useState(false);
 	const keys = React.useMemo(() => (Array.isArray(key) ? key : [key]), [key]);
 
@@ -39,6 +39,10 @@ export function useKeyPress(key: string | string[]) {
 			window.removeEventListener("blur", handleWindowBlur);
 		};
 	}, [handleKeyDown, handleKeyUp, handleWindowBlur]);
+
+	React.useEffect(() => {
+		if (isDown && action) action();
+	}, [isDown, action]);
 
 	return isDown;
 }

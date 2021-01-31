@@ -80,17 +80,17 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 		socket.emit("request_key_press", payload);
 	}, []);
 	const handleDeckChange = React.useCallback((payload: DeckChangePayload) => {
-		console.log("client > server: request_deck_change", payload);
+		// console.log("client > server: request_deck_change", payload);
 		socket.emit("request_deck_change", payload);
 	}, []);
 
 	const handleKickPlayer = React.useCallback((payload: KickPlayerPayload) => {
-		console.log("client > server: request_kick_player", payload);
+		// console.log("client > server: request_kick_player", payload);
 		socket.emit("request_kick_player", payload);
 	}, []);
 
 	const handleStartGame = React.useCallback(() => {
-		console.log("client > server: start_game");
+		// console.log("client > server: start_game");
 		socket.emit("start_game");
 	}, []);
 
@@ -102,18 +102,28 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			});
 
 			socket.on("login_success", (payload: LoginSuccessPayload) => {
-				console.log("server > client: login_success", payload);
+				// console.log("server > client: login_success", payload);
 				triggerEvent("login_success", payload);
 			});
 
 			socket.on("player_join", (payload: PlayerJoinPayload) => {
-				console.log("server > client: player_join", payload);
+				// console.log("server > client: player_join", payload);
 				triggerEvent("player_join", payload);
 			});
 
 			socket.on("player_leave", (payload: PlayerLeavePayload) => {
-				console.log("server > client: player_leave", payload);
+				// console.log("server > client: player_leave", payload);
 				triggerEvent("player_leave", payload);
+			});
+
+			socket.on("player_kicked", () => {
+				// console.log("server > client: player_leave", payload);
+				triggerEvent("player_kicked");
+				history.push("/rooms");
+			});
+
+			socket.on("game_started", () => {
+				triggerEvent("game_started");
 			});
 
 			socket.on("update", (payload: UpdatePayload) => {
@@ -127,8 +137,8 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			});
 
 			socket.on("disconnect", () => {
-				history.push("/rooms")
-			})
+				history.push("/rooms");
+			});
 
 			subscribeEvent("direction_change", handleDirectionChange);
 			subscribeEvent("key_press", handleKeyPress);
@@ -182,6 +192,12 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 		},
 		[history, connect]
 	);
+
+	React.useEffect(() => {
+		connect("/ao");
+		triggerEvent("start_game");
+		history.push("/play")
+	}, []);
 
 	const contextValue = React.useMemo(
 		() => ({

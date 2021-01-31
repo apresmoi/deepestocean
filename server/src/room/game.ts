@@ -12,7 +12,7 @@ import { FishType, IInternalFish, IObjective, IPlayer } from "../types";
 export const mapSize: Size = new Size(0, 0, 3000, 6000);
 export const startPosition: Vector = new Vector(200, 200);
 
-const timeConstant = 25;
+const timeConstant = 20;
 
 enum DECKS {
 	NAVIGATION = 0,
@@ -23,27 +23,53 @@ enum DECKS {
 	ENGINEERING = 5,
 }
 
+enum CollisionCategories {
+	WALL = 1,
+	SHIP = 2,
+	FISH = 4,
+	PROJECTILE = 8,
+}
+
 const walls = [
 	Bodies.rectangle(mapSize.width / 2, -25, mapSize.width, 50, {
 		isStatic: true,
+		collisionFilter: {
+			category: CollisionCategories.WALL,
+		},
 	}),
 	Bodies.rectangle(-25, mapSize.height / 2, 50, mapSize.height, {
 		isStatic: true,
+		collisionFilter: {
+			category: CollisionCategories.WALL,
+		},
 	}),
 	Bodies.rectangle(mapSize.width + 25, mapSize.height / 2, 50, mapSize.height, {
 		isStatic: true,
+		collisionFilter: {
+			category: CollisionCategories.WALL,
+		},
 	}),
+
 	Bodies.rectangle(mapSize.width / 2, mapSize.height + 25, mapSize.width, 50, {
 		isStatic: true,
+		collisionFilter: {
+			category: CollisionCategories.WALL,
+		},
 	}),
 ];
 
 const levelWalls = [
 	Bodies.rectangle(mapSize.width / 2, 1050 + 25, mapSize.width, 50, {
 		isStatic: true,
+		collisionFilter: {
+			category: CollisionCategories.WALL,
+		},
 	}),
 	Bodies.rectangle(mapSize.width / 2, 3600 + 25, mapSize.width, 50, {
 		isStatic: true,
+		collisionFilter: {
+			category: CollisionCategories.WALL,
+		},
 	}),
 ];
 
@@ -68,7 +94,7 @@ const fishByLevel = [
 ];
 
 function getRandomFish(level: number): IInternalFish {
-	const size = Math.random() * 20 + 5;
+	const size = Math.random() * 40 + 10;
 
 	const x = Math.random() * mapSize.width;
 	const y = Math.random() * [800, 1200, 2000][level] + [100, 1800, 4000][level];
@@ -77,8 +103,10 @@ function getRandomFish(level: number): IInternalFish {
 	const type = fishByLevel[level][index];
 
 	const fish = Bodies.circle(x, y, size, {
-		mass: 1,
-		isSensor: true,
+		mass: 0,
+		collisionFilter: {
+			category: CollisionCategories.FISH,
+		},
 		frictionAir: 0.1,
 		inertia: Infinity,
 		plugin: {
@@ -87,17 +115,33 @@ function getRandomFish(level: number): IInternalFish {
 		},
 	});
 
+	let direction = new Vector(
+		Math.random() - 0.5,
+		Math.random() - 0.5
+	).normalize();
+
 	return {
 		type,
 		body: fish,
 		mounted: false,
 		killed: false,
+		invertDirection: () => {
+			direction = direction.invert();
+		},
 		updater: () => {
-			const direction = new Vector(Math.random() - 0.5, Math.random() - 0.5)
-				.normalize()
-				.multiply(0.001);
-
-			Body.applyForce(fish, fish.position, direction);
+			if (Math.random() > 0.9) {
+				if (Math.random() > 0.98) {
+					direction = new Vector(
+						Math.random() - 0.5,
+						Math.random() - 0.5
+					).normalize();
+				}
+				Body.setPosition(
+					fish,
+					Vector.fromMatter(fish.position).add(direction.multiply(20))
+				);
+				// Body.applyForce(fish, fish.position, direction);
+			}
 		},
 	};
 }
@@ -106,7 +150,7 @@ function getRandomObjectives(fishes) {
 	const availableTypes = fishes.map((fish) => fish.type);
 	const types = [];
 	while (types.length < 3) {
-		const type = Math.round(Math.random() * availableTypes.length);
+		const type = Math.round(Math.random() * (availableTypes.length - 1));
 		if (!types.includes(availableTypes[type])) types.push(availableTypes[type]);
 	}
 	return types.map((type) => ({
@@ -165,6 +209,9 @@ export function Game() {
 			],
 		],
 		{
+			collisionFilter: {
+				category: CollisionCategories.SHIP,
+			},
 			mass: 10,
 			frictionAir: 0.1,
 			inertia: Infinity,
@@ -189,7 +236,7 @@ export function Game() {
 			length: 100,
 		},
 		torpedos: {
-			on: true,
+			on: false,
 		},
 		health: 100,
 	};
@@ -204,21 +251,10 @@ export function Game() {
 		}
 	}
 
-	function unsubscribeEvent(
-		eventName: string,
-		callback: (...args: any) => void
-	) {
-		if (!eventSubscribers[eventName]) {
-			eventSubscribers[eventName] = [];
-		} else {
-			eventSubscribers[eventName] = eventSubscribers[eventName].filter(
-				(cb) => cb !== callback
-			);
-		}
-	}
-
 	function triggerEvent(eventName: string, ...args: any) {
 		if (eventSubscribers[eventName]) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			//@ts-ignore
 			eventSubscribers[eventName].forEach((cb) => cb(...args));
 		}
 	}
@@ -252,6 +288,40 @@ export function Game() {
 
 	function playerKeyDown(id: string, code: string) {
 		console.log("KEYDOWN", id, code);
+
+		const player = getPlayer(id);
+
+		switch (player.deck) {
+			case DECKS.CANNONLEFT:
+				if (code === "SPACE") fireLeftCannon();
+				break;
+			case DECKS.CANNONRIGHT:
+				if (code === "SPACE") fireRightCannon();
+				break;
+			case DECKS.TORPEDO:
+				if (code === "SPACE") fireTorpedo();
+				break;
+			case DECKS.ENGINEERING:
+				switch (code) {
+					case "Z":
+						shipState.leftCannon.on = !shipState.leftCannon.on;
+						triggerEvent("update", serialize());
+						break;
+					case "X":
+						shipState.rightCannon.on = !shipState.rightCannon.on;
+						triggerEvent("update", serialize());
+						break;
+					case "C":
+						shipState.lights.on = !shipState.lights.on;
+						triggerEvent("update", serialize());
+						break;
+					case "V":
+						shipState.torpedos.on = !shipState.torpedos.on;
+						triggerEvent("update", serialize());
+						break;
+				}
+				break;
+		}
 	}
 
 	function playerChangeDirection(
@@ -270,7 +340,7 @@ export function Game() {
 	}
 
 	function removePlayer(id: string) {
-		if (players[id].isAdmin) {
+		if (players[id]?.isAdmin) {
 			Object.keys(players).forEach((id, i) => {
 				if (i === 0) players[id].isAdmin = true;
 			});
@@ -281,6 +351,12 @@ export function Game() {
 		}, {});
 	}
 
+	function fireLeftCannon() {}
+
+	function fireRightCannon() {}
+
+	function fireTorpedo() {}
+
 	function updateShip(): boolean {
 		let changed = false;
 		Object.values(players).forEach((player) => {
@@ -289,20 +365,27 @@ export function Game() {
 					Body.applyForce(
 						ship,
 						ship.position,
-						new Vector(player.dx, player.dy).normalize().multiply(0.1) //.multiply(0.03)
+						new Vector(player.dx, player.dy).normalize().multiply(0.03) //.multiply(0.03)
 					);
 					changed = true;
 				} else if (player.deck === DECKS.LIGHTS) {
-					shipState.lights.angle += (player.dx * Math.PI) / 180;
-					shipState.lights.length -= player.dy * 2;
+					shipState.lights.angle += player.dx / 50;
+					shipState.lights.length -= player.dy * 5;
 					if (shipState.lights.length < 50) shipState.lights.length = 50;
 					else if (shipState.lights.length > 150) shipState.lights.length = 150;
 					changed = true;
 				} else if (player.deck === DECKS.CANNONLEFT) {
-					shipState.leftCannon.angle += (player.dx * Math.PI) / 180;
+					shipState.leftCannon.angle += player.dx;
+					if (shipState.leftCannon.angle < -14)
+						shipState.leftCannon.angle = -14;
+					if (shipState.leftCannon.angle > 30) shipState.leftCannon.angle = 30;
 					changed = true;
 				} else if (player.deck === DECKS.CANNONRIGHT) {
-					shipState.rightCannon.angle += (player.dx * Math.PI) / 180;
+					shipState.rightCannon.angle += player.dx;
+					if (shipState.rightCannon.angle < -20)
+						shipState.rightCannon.angle = -20;
+					if (shipState.rightCannon.angle > 20)
+						shipState.rightCannon.angle = 20;
 					changed = true;
 				}
 			}
@@ -327,7 +410,6 @@ export function Game() {
 	}
 
 	function checkObjetivesCompleted() {
-		console.log(objectives);
 		if (objectives.every((o) => o.done)) {
 			level += 1;
 			changeLevel();
@@ -359,20 +441,19 @@ export function Game() {
 	}
 
 	function handleCollisionPair(bodyA: Matter.Body, bodyB: Matter.Body) {
-		if (
-			bodyA.isSensor &&
-			bodyA.plugin?.isMonster &&
-			!bodyB.isSensor &&
-			bodyB.plugin?.isShip
-		) {
-			const index = objectives.findIndex(
-				(obj) => obj.type === bodyA.plugin.type
-			);
-			if (index !== -1) {
-				objectives[index].done = true;
-				fishes[bodyA.plugin.index].mounted = false;
-				World.remove(world, bodyA);
-			}
+		if (bodyA.plugin?.isMonster) {
+			fishes[bodyA.plugin.index].invertDirection();
+		}
+		if (bodyA.plugin?.isMonster && bodyB.plugin?.isShip) {
+			shipState.health -= 10;
+			// const index = objectives.findIndex(
+			// 	(obj) => obj.type === bodyA.plugin.type
+			// );
+			// if (index !== -1) {
+			// 	objectives[index].done = true;
+			// 	fishes[bodyA.plugin.index].mounted = false;
+			// 	World.remove(world, bodyA);
+			// }
 		}
 	}
 
@@ -386,32 +467,40 @@ export function Game() {
 	}
 
 	function init() {
-		console.log("init");
+		if (!startTime) {
+			console.log("init");
 
-		World.add(world, ship);
-		walls.forEach((wall) => World.add(world, wall));
-		levelWalls.forEach((wall) => World.add(world, wall));
+			World.add(world, ship);
+			walls.forEach((wall) => World.add(world, wall));
+			levelWalls.forEach((wall) => World.add(world, wall));
 
-		changeLevel();
-		startTime = new Date();
+			changeLevel();
+			startTime = new Date();
 
-		Events.on(engine, "collisionStart", handleCollision);
+			Events.on(engine, "collisionStart", handleCollision);
 
-		interval = setInterval(() => {
-			if (shouldUpdate() || seconds !== timeElapsed()) {
-				seconds = timeElapsed();
-				triggerEvent("update", serialize());
-			}
-		}, timeConstant);
+			interval = setInterval(() => {
+				if (shouldUpdate() || seconds !== timeElapsed()) {
+					seconds = timeElapsed();
+					triggerEvent("update", serialize());
+				}
+			}, timeConstant);
+		}
 	}
 
 	function reset() {
-		console.log("reset");
-		World.clear(world, false);
-		objectives = [];
-		fishes = [];
-		startTime = null;
-		clearInterval(interval);
+		if (startTime) {
+			console.log("reset");
+			World.clear(world, false);
+			World.remove(world, ship);
+			walls.forEach((wall) => World.remove(world, wall));
+			levelWalls.forEach((wall) => World.remove(world, wall));
+
+			objectives = [];
+			fishes = [];
+			startTime = null;
+			clearInterval(interval);
+		}
 	}
 
 	function serialize() {
@@ -445,7 +534,6 @@ export function Game() {
 		removePlayer,
 		serialize,
 		subscribeEvent,
-		unsubscribeEvent,
 		triggerEvent,
 		playerKeyDown,
 		playerChangeDirection,

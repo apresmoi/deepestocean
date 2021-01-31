@@ -7,7 +7,7 @@ import {
 } from "../types";
 import { Game } from "./game";
 
-export function Room(id: string, name: string, socket: SocketIO.Namespace) {
+export function Room(id: string, name: string, mainSocket: SocketIO.Namespace) {
 	const game = Game();
 
 	const eventSubscribers: {
@@ -22,26 +22,15 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 		}
 	}
 
-	function unsubscribeEvent(
-		eventName: string,
-		callback: (...args: any) => void
-	) {
-		if (!eventSubscribers[eventName]) {
-			eventSubscribers[eventName] = [];
-		} else {
-			eventSubscribers[eventName] = eventSubscribers[eventName].filter(
-				(cb) => cb !== callback
-			);
-		}
-	}
-
 	function triggerEvent(eventName: string, ...args: any) {
 		if (eventSubscribers[eventName]) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			//@ts-ignore
 			eventSubscribers[eventName].forEach((cb) => cb(...args));
 		}
 	}
 
-	socket.on("connect", (socket: IConnectPayload) => {
+	mainSocket.on("connect", (socket: IConnectPayload) => {
 		console.log(`player ${socket.id} connected`);
 
 		if (Object.values(game.getPlayers()).length > 5) {
@@ -68,12 +57,13 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 		);
 
 		socket.on("start_game", () => {
-			console.log("start_game");
+			mainSocket.emit("game_started");
 			game.init();
 		});
 
 		socket.on("request_kick_player", (payload: IKickPlayerPayload) => {
 			console.log("request_kick_player", payload.id);
+			socket.to(payload.id).emit("player_kicked");
 			game.removePlayer(payload.id);
 		});
 
@@ -98,15 +88,14 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 	});
 
 	game.subscribeEvent("update", (payload) => {
-		socket.emit("update", payload);
+		mainSocket.emit("update", payload);
 	});
 
 	return {
 		id,
 		name,
-		socket,
+		socket: mainSocket,
 		subscribeEvent,
-		unsubscribeEvent,
 		triggerEvent,
 		reset: () => {
 			game.reset();

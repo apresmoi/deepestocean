@@ -126,6 +126,10 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 				}
 			});
 
+			socket.on("disconnect", () => {
+				history.push("/rooms")
+			})
+
 			subscribeEvent("direction_change", handleDirectionChange);
 			subscribeEvent("key_press", handleKeyPress);
 			subscribeEvent("deck_change", handleDeckChange);

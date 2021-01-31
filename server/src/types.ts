@@ -17,6 +17,7 @@ export type IInternalFish = {
 	body: Matter.Body;
 	mounted: boolean;
 	killed: boolean;
+	updater: () => void;
 };
 
 export type IObjective = {

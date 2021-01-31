@@ -17,7 +17,7 @@ export function Ship() {
 
 	return (
 		<g transform={`translate(${ship.x}, ${ship.y})`}>
-			<g transform={`scale(0.25) translate(-480, -252)`}>
+			<g transform={`scale(0.25) translate(-480, -390)`}>
 				<svg
 					overflow="visible"
 					data-name="Layer 1"

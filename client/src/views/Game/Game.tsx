@@ -10,6 +10,7 @@ import { useHistory } from "react-router-dom";
 import { useDisableGoBack } from "@hooks";
 
 import "./styles.scoped.scss";
+import { Background1, Background2, Background3 } from "@components/Background";
 
 export function Game() {
 	const { connected } = useConnection();
@@ -22,7 +23,7 @@ export function Game() {
 	useDisableGoBack();
 
 	const handleLeave = () => {
-		history.push("/rooms")
+		history.push("/rooms");
 	};
 
 	return (
@@ -31,6 +32,9 @@ export function Game() {
 				<button onClick={handleLeave}>Leave game</button>
 				<GameCanvas>
 					<GameCamera>
+						<Background1 />
+						<Background2 />
+						<Background3 />
 						<Fish />
 						<Ship />
 					</GameCamera>

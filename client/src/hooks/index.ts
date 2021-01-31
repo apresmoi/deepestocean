@@ -5,3 +5,4 @@ export { useFish } from "./useFish";
 export { usePlayers } from "./usePlayers";
 export { useUpdate } from "./useUpdate";
 export { usePlayerState } from "./usePlayerState";
+export { useDisableGoBack } from "./useDisableGoBack";

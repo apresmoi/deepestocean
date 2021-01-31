@@ -10,6 +10,37 @@ import { Game } from "./game";
 export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 	const game = Game();
 
+	const eventSubscribers: {
+		[eventName: string]: Array<(callback: (...args: any) => void) => void>;
+	} = {};
+
+	function subscribeEvent(eventName: string, callback: (...args: any) => void) {
+		if (!eventSubscribers[eventName]) {
+			eventSubscribers[eventName] = [callback];
+		} else {
+			eventSubscribers[eventName].push(callback);
+		}
+	}
+
+	function unsubscribeEvent(
+		eventName: string,
+		callback: (...args: any) => void
+	) {
+		if (!eventSubscribers[eventName]) {
+			eventSubscribers[eventName] = [];
+		} else {
+			eventSubscribers[eventName] = eventSubscribers[eventName].filter(
+				(cb) => cb !== callback
+			);
+		}
+	}
+
+	function triggerEvent(eventName: string, ...args: any) {
+		if (eventSubscribers[eventName]) {
+			eventSubscribers[eventName].forEach((cb) => cb(...args));
+		}
+	}
+
 	socket.on("connect", (socket: IConnectPayload) => {
 		console.log(`player ${socket.id} connected`);
 
@@ -19,9 +50,9 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 
 		socket.emit("login_success", {
 			self: game.getPlayer(socket.id),
-			players: game.players,
+			players: game.getPlayers(),
 		});
-		socket.broadcast.emit("player_join", game.players[socket.id]);
+		socket.broadcast.emit("player_join", game.getPlayer(socket.id));
 
 		socket.on(
 			"request_direction_change",
@@ -50,6 +81,9 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 			console.log(`player ${socket.id} disconnected`);
 			socket.broadcast.emit("player_leave", { id: socket.id });
 			game.removePlayer(socket.id);
+			if (Object.values(game.getPlayers()).length === 0) {
+				triggerEvent("room_empty");
+			}
 		});
 	});
 
@@ -61,5 +95,8 @@ export function Room(id: string, name: string, socket: SocketIO.Namespace) {
 		id,
 		name,
 		socket,
+		subscribeEvent,
+		unsubscribeEvent,
+		triggerEvent,
 	};
 }

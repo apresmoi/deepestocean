@@ -184,6 +184,10 @@ export function Game() {
 		return players[id];
 	}
 
+	function getPlayers() {
+		return players;
+	}
+
 	function playerKeyDown(id: string, code: string) {
 		console.log("KEYDOWN", id, code);
 	}
@@ -313,7 +317,7 @@ export function Game() {
 
 	return {
 		init,
-		players,
+		getPlayers,
 		addPlayer,
 		getPlayer,
 		removePlayer,

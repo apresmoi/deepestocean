@@ -24,22 +24,19 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 		};
 	}, [arrowLeft, arrowRight, arrowDown, arrowUp]);
 
-	const control = useKeyPress(["Control", "Alt"]);
 	const number1 = useKeyPress(["1"]);
 	const number2 = useKeyPress(["2"]);
 	const number3 = useKeyPress(["3"]);
 	const number4 = useKeyPress(["4"]);
 	const number5 = useKeyPress(["5"]);
 	const deck = React.useMemo(() => {
-		if (control) {
-			if (number1) return 1;
-			else if (number2) return 2;
-			else if (number3) return 3;
-			else if (number4) return 4;
-			else if (number5) return 5;
-		}
+		if (number1) return 1;
+		else if (number2) return 2;
+		else if (number3) return 3;
+		else if (number4) return 4;
+		else if (number5) return 5;
 		return null;
-	}, [control, number1, number2, number3, number4, number5]);
+	}, [number1, number2, number3, number4, number5]);
 
 	React.useEffect(() => {
 		triggerEvent("direction_change", direction);

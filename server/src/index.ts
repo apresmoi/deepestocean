@@ -61,6 +61,9 @@ app.post("/api/rooms", (req, res) => {
 	if (name && name.length > 5) {
 		const id = "/" + uuid();
 		matches[id] = Room(id, name, io.of(id));
+		matches[id].subscribeEvent("room_empty", () => {
+			delete matches[id];
+		});
 		res.status(201).send({
 			id,
 			name,

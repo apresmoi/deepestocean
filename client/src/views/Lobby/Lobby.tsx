@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { usePlayer, usePlayers, usePlayerState } from "@hooks";
+import { useDisableGoBack, usePlayer, usePlayers, usePlayerState } from "@hooks";
 import { Container } from "@layout";
 
 import "./styles.scoped.scss";
@@ -28,7 +28,9 @@ export function Lobby() {
 
 	React.useEffect(() => {
 		if (!connected) history.push("/rooms");
-	}, [connected]);
+	}, [connected, history]);
+
+	useDisableGoBack()
 
 	return (
 		<Container>

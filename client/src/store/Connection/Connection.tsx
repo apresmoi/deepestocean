@@ -100,6 +100,10 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 				}
 			});
 
+			socket.current?.on("disconnect", () => {
+				setConnected(false);
+			});
+
 			const handleDirectionChange = (payload: DirectionChangedPayload) => {
 				// console.log("client > server: request_direction_change", payload);
 				socket.current?.emit("request_direction_change", payload);
@@ -138,6 +142,7 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 	);
 
 	const disconnect = React.useCallback(() => {
+		setConnected(false);
 		return socket.current?.disconnect();
 	}, []);
 

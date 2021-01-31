@@ -17,7 +17,8 @@ export function Login() {
 		<Container>
 			<div className="login">
 				<div className="login-content">
-					<h1>Deepest Ocean</h1>
+				<img src="/images/instructions2.svg" height={36}/>
+					<h1>Choose your name</h1>
 					<input
 						type="text"
 						placeholder="Choose your name!"

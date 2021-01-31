@@ -56,7 +56,9 @@ export function Lobby() {
 		<Container>
 			<div className="lobby">
 				<div className="lobby-content">
-					<div className="table">
+				<img src="/images/instructions2.svg" height={36}/>
+					<h1>Get ready to start</h1>
+						<div className="table">
 						<table>
 							<thead>
 								<tr>

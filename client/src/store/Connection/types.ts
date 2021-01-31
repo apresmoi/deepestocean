@@ -1,4 +1,4 @@
-import { FishType, IFish, IPlayer, IShip } from "../Game/types";
+import { FishType, IEffect, IFish, IPlayer, IShip } from "../Game/types";
 
 export type LoginSuccessPayload = {
 	self: IPlayer;
@@ -14,6 +14,8 @@ export type UpdatePayload = {
 	players: { [id: string]: IPlayer };
 	ship: IShip;
 	fishes: IFish[];
+	effects: IEffect[];
+	rewards: { type: FishType; amount: number; done: boolean }[];
 };
 
 export type DirectionChangedPayload = {

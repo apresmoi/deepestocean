@@ -3,18 +3,22 @@ import { Container } from "@layout";
 import { GameCanvas } from "@components/GameCanvas";
 import { Ship } from "@components/Ship";
 import { Fish } from "@components/Fish";
-import { GameStore, useConnection } from "@store";
+import { GameStore, useConnection, useEvents } from "@store";
 import { GameCamera } from "@components/GameCamera";
 import { UI } from "@components/UI";
 import { useHistory } from "react-router-dom";
-import { useDisableGoBack } from "@hooks";
+import { useDisableGoBack, useGameEnd } from "@hooks";
 
 import "./styles.scoped.scss";
 import { Background1, Background2, Background3 } from "@components/Background";
+import { Effects } from "@components/Effects";
+import { Cards } from "@components/Cards";
 
 export function Game() {
 	const { connected } = useConnection();
 	const history = useHistory();
+
+	const gameEnd = useGameEnd();
 
 	React.useEffect(() => {
 		if (!connected) history.push("/rooms");
@@ -36,11 +40,18 @@ export function Game() {
 						<Background2 />
 						<Background3 />
 						<Fish />
+						<Effects />
 						<g style={{ clipPath: "url(#lights)" }}></g>
 						<Ship />
 					</GameCamera>
 					<UI />
+					<Cards />
 				</GameCanvas>
+				{gameEnd && (
+					<button onClick={() => history.push("/lobby")}>
+						Go back to lobby
+					</button>
+				)}
 			</Container>
 		</GameStore>
 	);

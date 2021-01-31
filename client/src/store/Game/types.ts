@@ -58,8 +58,20 @@ export type FishType =
 	| "VampireSquid";
 
 export type IFish = {
+	id: string;
 	type: FishType;
 	x: number;
 	y: number;
 	radius: number;
+};
+
+export type EffectType = "LEFTCANNON" | "RIGHTCANNON";
+
+export type IEffect = {
+	id: number;
+	type: EffectType;
+	x: number;
+	y: number;
+	radius: number;
+	angle: number;
 };

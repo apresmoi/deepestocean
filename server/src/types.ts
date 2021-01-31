@@ -12,7 +12,10 @@ export type FishType =
 	| "SnipeEel"
 	| "VampireSquid";
 
+export type EffectType = "LEFTCANNON" | "RIGHTCANNON";
+
 export type IInternalFish = {
+	id: number;
 	type: FishType;
 	body: Matter.Body;
 	mounted: boolean;
@@ -27,10 +30,28 @@ export type IObjective = {
 	done: boolean;
 };
 
-export type IFish = {
+export type IInternalEffect = {
+	id: number;
+	type: EffectType;
+	body: Matter.Body;
+	mounted: boolean;
+	angle: number;
+};
+
+export type IEffect = {
+	id: number;
+	type: EffectType;
 	x: number;
 	y: number;
-	r: number;
+	radius: number;
+	angle: number;
+};
+
+export type IFish = {
+	id: number;
+	x: number;
+	y: number;
+	radius: number;
 	type: string;
 };
 

@@ -7,3 +7,6 @@ export { usePlayers } from "./usePlayers";
 export { useUpdate } from "./useUpdate";
 export { useShip } from "./useShip";
 export { useFish } from "./useFish";
+
+export { useEffects } from "./useEffects";
+export { useGameEnd } from "./useGameEnd";

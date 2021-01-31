@@ -91,6 +91,10 @@ export function Room(id: string, name: string, mainSocket: SocketIO.Namespace) {
 		mainSocket.emit("update", payload);
 	});
 
+	game.subscribeEvent("game_end", (payload) => {
+		mainSocket.emit("game_end", payload);
+	});
+
 	return {
 		id,
 		name,

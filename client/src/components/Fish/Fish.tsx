@@ -15,7 +15,7 @@ export function Fish() {
 				if (!FishCompo) return null;
 				return (
 					<g
-						key={i}
+						key={f.id}
 						transform={`translate(${f.x}, ${f.y}) scale(${f.radius / 50})`}
 					>
 						{<FishCompo />}

@@ -136,6 +136,16 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 				}
 			});
 
+			socket.on("game_end", (payload: UpdatePayload) => {
+				// console.log("server > client: update", payload);
+				if (socket) {
+					triggerEvent("game_end", {
+						...payload,
+						self: payload.players[socket.id],
+					});
+				}
+			});
+
 			socket.on("disconnect", () => {
 				history.push("/rooms");
 			});
@@ -193,11 +203,11 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 		[history, connect]
 	);
 
-	React.useEffect(() => {
-		connect("/ao");
-		triggerEvent("start_game");
-		history.push("/play")
-	}, []);
+	// React.useEffect(() => {
+	// 	connect("/ao");
+	// 	triggerEvent("start_game");
+	// 	history.push("/play");
+	// }, []);
 
 	const contextValue = React.useMemo(
 		() => ({

@@ -7,7 +7,14 @@ import {
 	IEventCollision,
 } from "matter-js";
 import { Size, Vector } from "../math";
-import { FishType, IInternalFish, IObjective, IPlayer } from "../types";
+import {
+	FishType,
+	IEffect,
+	IInternalEffect,
+	IInternalFish,
+	IObjective,
+	IPlayer,
+} from "../types";
 
 export const mapSize: Size = new Size(0, 0, 3000, 6000);
 export const startPosition: Vector = new Vector(200, 200);
@@ -121,6 +128,7 @@ function getRandomFish(level: number): IInternalFish {
 	).normalize();
 
 	return {
+		id: 0,
 		type,
 		body: fish,
 		mounted: false,
@@ -177,7 +185,12 @@ export function Game() {
 	let seconds = 0;
 	let startTime = null;
 
+	let fishCount = 1;
+	let effectCount = 1;
+
+	let rewards: IObjective[] = [];
 	let objectives: IObjective[] = [];
+	let effects: IInternalEffect[] = [];
 
 	let players: { [id: string]: IPlayer } = {};
 
@@ -351,11 +364,81 @@ export function Game() {
 		}, {});
 	}
 
-	function fireLeftCannon() {}
+	function fireLeftCannon() {
+		if (shipState.leftCannon.on) {
+			const angle = shipState.leftCannon.angle;
+			const projectile = Bodies.circle(ship.position.x, ship.position.y, 5, {
+				isSensor: true,
+				collisionFilter: {
+					category: CollisionCategories.PROJECTILE,
+				},
+			});
 
-	function fireRightCannon() {}
+			const effect: IInternalEffect = {
+				id: effectCount++,
+				type: "LEFTCANNON",
+				body: projectile,
+				mounted: true,
+				angle,
+			};
 
-	function fireTorpedo() {}
+			World.add(world, projectile);
+
+			Body.setVelocity(
+				projectile,
+				new Vector(-10, 0).rotate((angle * Math.PI) / 180)
+			);
+
+			setTimeout(() => {
+				effect.mounted = false;
+				effects = effects.filter((ef) => ef !== effect);
+				World.remove(world, projectile);
+			}, 2000);
+
+			effects.push(effect);
+		}
+	}
+
+	function fireRightCannon() {
+		if (shipState.rightCannon.on) {
+			const angle = shipState.rightCannon.angle;
+			const projectile = Bodies.circle(ship.position.x, ship.position.y, 5, {
+				isSensor: true,
+				collisionFilter: {
+					category: CollisionCategories.PROJECTILE,
+				},
+			});
+
+			const effect: IInternalEffect = {
+				id: effectCount++,
+				type: "RIGHTCANNON",
+				body: projectile,
+				mounted: true,
+				angle,
+			};
+
+			World.add(world, projectile);
+
+			Body.setVelocity(
+				projectile,
+				new Vector(10, 0).rotate((angle * Math.PI) / 180)
+			);
+
+			setTimeout(() => {
+				effect.mounted = false;
+				effects = effects.filter((ef) => ef !== effect);
+				World.remove(world, projectile);
+			}, 2000);
+
+			effects.push(effect);
+		}
+	}
+
+	function fireTorpedo() {
+		if (shipState.torpedos.on) {
+			console.log("torpedo");
+		}
+	}
 
 	function updateShip(): boolean {
 		let changed = false;
@@ -411,8 +494,13 @@ export function Game() {
 
 	function checkObjetivesCompleted() {
 		if (objectives.every((o) => o.done)) {
-			level += 1;
-			changeLevel();
+			if (level === 2) {
+				stop();
+				triggerEvent("game_end", serialize());
+			} else {
+				level += 1;
+				changeLevel();
+			}
 		}
 	}
 
@@ -427,6 +515,7 @@ export function Game() {
 
 		while (newFishes.length < 10) {
 			const fish = getRandomFish(level);
+			fish.id = fishCount++;
 			if (fish.type) newFishes.push(fish);
 		}
 
@@ -437,7 +526,8 @@ export function Game() {
 			fishes[fishes.length - 1].body.plugin.index = fishes.length - 1;
 		});
 
-		getRandomObjectives(newFishes).forEach((obj) => objectives.push(obj));
+		rewards = [...rewards, ...objectives];
+		objectives = getRandomObjectives(newFishes);
 	}
 
 	function handleCollisionPair(bodyA: Matter.Body, bodyB: Matter.Body) {
@@ -445,15 +535,16 @@ export function Game() {
 			fishes[bodyA.plugin.index].invertDirection();
 		}
 		if (bodyA.plugin?.isMonster && bodyB.plugin?.isShip) {
-			shipState.health -= 10;
-			// const index = objectives.findIndex(
-			// 	(obj) => obj.type === bodyA.plugin.type
-			// );
-			// if (index !== -1) {
-			// 	objectives[index].done = true;
-			// 	fishes[bodyA.plugin.index].mounted = false;
-			// 	World.remove(world, bodyA);
-			// }
+			// shipState.health -= 10;
+			const index = objectives.findIndex(
+				(obj) => obj.type === bodyA.plugin.type
+			);
+			if (index !== -1) {
+				objectives[index].done = true;
+				objectives[index].amount++;
+				fishes[bodyA.plugin.index].mounted = false;
+				World.remove(world, bodyA);
+			}
 		}
 	}
 
@@ -468,6 +559,7 @@ export function Game() {
 
 	function init() {
 		if (!startTime) {
+			reset();
 			console.log("init");
 
 			World.add(world, ship);
@@ -488,6 +580,13 @@ export function Game() {
 		}
 	}
 
+	function stop() {
+		if (startTime) {
+			console.log("stop");
+			clearInterval(interval);
+		}
+	}
+
 	function reset() {
 		if (startTime) {
 			console.log("reset");
@@ -496,8 +595,10 @@ export function Game() {
 			walls.forEach((wall) => World.remove(world, wall));
 			levelWalls.forEach((wall) => World.remove(world, wall));
 
+			rewards = [];
 			objectives = [];
 			fishes = [];
+			effects = [];
 			startTime = null;
 			clearInterval(interval);
 		}
@@ -514,9 +615,21 @@ export function Game() {
 			},
 			objectives,
 			players,
+			rewards,
+			effects: effects
+				.filter((e) => e.mounted)
+				.map((e) => ({
+					id: e.id,
+					type: e.type,
+					x: e.body.position.x,
+					y: e.body.position.y,
+					radius: e.body.circleRadius,
+					angle: e.angle,
+				})),
 			fishes: fishes
 				.filter((f) => f.mounted)
 				.map((fish) => ({
+					id: fish.id,
 					x: fish.body.position.x,
 					y: fish.body.position.y,
 					radius: fish.body.circleRadius,

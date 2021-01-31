@@ -26,7 +26,7 @@ export function Ship() {
 				>
 					<g
 						transform={`translate(240, 125) rotate(${
-							(ship.state.lights.angle * 180) / Math.PI
+							(ship.state.lights.angle * 1080) / Math.PI
 						}) translate(-240, -125)`}
 					>
 						<polygon

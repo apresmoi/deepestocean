@@ -6,6 +6,7 @@ import { usePlayers } from "@hooks";
 export function Lobby() {
 	const players = usePlayers();
 	const history = useHistory();
+
 	const playersNames = Object.keys(players)
 	return (
 		<div className="lobby">

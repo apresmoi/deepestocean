@@ -31,30 +31,38 @@ export function Ship() {
 						id="lights"
 						transform={`translate(${ship.x}, ${
 							ship.y
-						}) translate(40, -10) scale(0.67) rotate(${
-							ship.state.lights.angle / Math.PI
+						}) translate(40, -10) scale(${
+							(4 * ship.state.lights.power) / 400 - (ship.state.lights.power > 200 ? 2 : 0)
+						}) scale(0.67) rotate(${
+							(ship.state.lights.angle * 1080) / Math.PI
 						}) translate(-240, -125)`}
 					>
-						<polygon
-							points={`
+						{ship.state.lights.on && (
+							<>
+								<polygon
+									points={`
 							240,125 
 							${480 + lightsLength},${-150 + lightsWidth}
 							${480 + lightsLength},${252 + 150 - lightsWidth}
 							240,125`}
-						/>
-						<polygon
-							points={`
+								/>
+								<polygon
+									points={`
 							240,125 
 							${-0 - lightsLength},${-150 + lightsWidth}
 							${-0 - lightsLength},${252 + 150 - lightsWidth}
 							240,125`}
-						/>
+								/>
+							</>
+						)}
 					</clipPath>
 					<g
-						transform={`translate(240, 125) rotate(${
+						transform={`translate(240, 125) scale(${
+							(4 * ship.state.lights.power) / 400 - (ship.state.lights.power > 200 ? 2 : 0)
+						}) rotate(${
 							(ship.state.lights.angle * 1080) / Math.PI
 						}) translate(-240, -125)`}
-						opacity={ship.state.lights.on ? '1' : '0'}
+						opacity={ship.state.lights.on ? "1" : "0"}
 					>
 						<polygon
 							points={`

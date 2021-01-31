@@ -63,6 +63,7 @@ export type IFish = {
 	x: number;
 	y: number;
 	radius: number;
+	killed: boolean;
 };
 
 export type EffectType = "LEFTCANNON" | "RIGHTCANNON";

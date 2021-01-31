@@ -1,0 +1,8 @@
+.ship {
+	opacity: 1;
+	&.exploded {
+		opacity: 0;
+
+		transition: 2s ease-out;
+	}
+}

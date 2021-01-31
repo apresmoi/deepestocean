@@ -146,7 +146,7 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 				.then((room) => {
 					if (room.id) {
 						connect(room.id);
-						history.push("/game");
+						history.push("/lobby");
 					}
 				});
 		},
@@ -157,7 +157,7 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 
 	React.useEffect(() => {
 		updateRooms();
-		connect("/ao");
+		// connect("/ao");
 	}, []);
 
 	const contextValue = React.useMemo(

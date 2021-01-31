@@ -78,7 +78,6 @@ export function UI() {
 		});
 		return decks;
 	}, [playerList, data?.ship.state]);
-
 	if (!data) return null;
 	return (
 		<g transform={`scale(${1 / 1.5}, ${1 / 1.5})`}>

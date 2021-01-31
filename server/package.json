@@ -4,8 +4,10 @@
   "description": "An .io game",
   "main": "src/index.ts",
   "scripts": {
-    "start": "webpack",
-    "dev": "nodemon build/index.js"
+    "build": "webpack",
+    "start": "NODE_ENV=development webpack",
+    "dev": "nodemon build/index.js",
+    "prod": "node build/index.js"
   },
   "dependencies": {
     "@types/uuid": "^8.3.0",

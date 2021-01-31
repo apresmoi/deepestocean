@@ -627,7 +627,9 @@ export function Game() {
 			fishes[bodyA.plugin.index].invertDirection();
 		}
 		if (bodyA.plugin?.isMonster && bodyB.plugin?.isShip) {
-			shipState.health -= 10;
+			if (!(shipState.health <= 0)) {
+				shipState.health -= 10;
+			}
 			if (shipState.health <= 0) {
 				triggerEvent("game_end", serialize());
 			}

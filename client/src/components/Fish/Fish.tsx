@@ -1,9 +1,8 @@
 import * as React from "react";
-import { useFish } from "@hooks";
 import * as Fishes from "./List";
+import { useFish } from "@hooks";
 
 import "./styles.scoped.scss";
-import { Background3 } from "@components/Background";
 
 export function Fish() {
 	const fish = useFish();

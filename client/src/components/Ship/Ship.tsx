@@ -4,14 +4,8 @@ import { IShip } from "store/Game/types";
 import "./styles.scoped.scss";
 
 export function Ship() {
-	const [ship, setShip] = React.useState<IShip>();
-
-	useShip((ship) => {
-		setShip(ship);
-	});
-
+	const ship = useShip();
 	if (!ship) return null;
-
 	const lightsLength = (200 * ship.state.lights.length) / 100;
 	const lightsWidth = ship.state.lights.length * 1.2;
 
@@ -32,7 +26,8 @@ export function Ship() {
 						transform={`translate(${ship.x}, ${
 							ship.y
 						}) translate(40, -10) scale(${
-							(4 * ship.state.lights.power) / 400 - (ship.state.lights.power > 200 ? 2 : 0)
+							(4 * ship.state.lights.power) / 400 -
+							(ship.state.lights.power > 200 ? 2 : 0)
 						}) scale(0.67) rotate(${
 							(ship.state.lights.angle * 1080) / Math.PI
 						}) translate(-240, -125)`}
@@ -56,9 +51,25 @@ export function Ship() {
 							</>
 						)}
 					</clipPath>
+					<defs>
+						<linearGradient id="lightsGradient">
+							<stop offset="0%" stop-color="#ffc800" />
+							<stop offset="80%" stop-color="#ffc800" stopOpacity={0.9} />
+							<stop offset="90%" stop-color="#ffc800" stopOpacity={0.5} />
+							<stop offset="100%" stop-color="#ffc800" stopOpacity={0.1} />
+						</linearGradient>
+						<linearGradient id="lightsGradient2">
+							<stop offset="0%" stop-color="#ffc800" stopOpacity={0.1} />
+							<stop offset="10%" stop-color="#ffc800" stopOpacity={0.5} />
+							<stop offset="20%" stop-color="#ffc800" stopOpacity={0.9} />
+							<stop offset="100%" stop-color="#ffc800" />
+						</linearGradient>
+					</defs>
 					<g
+						className="lights"
 						transform={`translate(240, 125) scale(${
-							(4 * ship.state.lights.power) / 400 - (ship.state.lights.power > 200 ? 2 : 0)
+							(4 * ship.state.lights.power) / 400 -
+							(ship.state.lights.power > 200 ? 2 : 0)
 						}) rotate(${
 							(ship.state.lights.angle * 1080) / Math.PI
 						}) translate(-240, -125)`}
@@ -71,7 +82,7 @@ export function Ship() {
 							${480 + lightsLength},${252 + 150 - lightsWidth}
 							240,125`}
 							opacity={0.3}
-							fill="#ffc800"
+							fill="url(#lightsGradient)"
 						/>
 						<polygon
 							points={`
@@ -80,7 +91,7 @@ export function Ship() {
 							${-0 - lightsLength},${252 + 150 - lightsWidth}
 							240,125`}
 							opacity={0.3}
-							fill="#ffc800"
+							fill="url(#lightsGradient2)"
 						/>
 					</g>
 					<path

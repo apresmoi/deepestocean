@@ -1,1 +1,6 @@
-export { useSound } from "./sounds";
+export {
+	useSound,
+	useRandomSound,
+	useLaserSound,
+	useKeystrokeSound,
+} from "./sounds";

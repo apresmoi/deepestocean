@@ -18,11 +18,17 @@
 		width: 500px;
 		height: 400px;
 
+		img {
+			min-height: 36px;
+		}
+
 		h1 {
 			width: 100%;
-			color: #fdf2ce;
+
 			font-size: 2.5rem;
 			text-align: center;
+
+			color: #fdf2ce;
 		}
 		p {
 			color: #fdf2ce;
@@ -47,6 +53,7 @@
 
 			thead tr {
 				border-bottom: 1px solid black;
+
 				background: #efe8d6;
 				}
 
@@ -63,10 +70,12 @@
 		}
 
 		button {
-			background: #02c39a;
-			max-width: 50%;
 			padding: 3px 15px 5px;
+
+			max-width: 50%;
 			min-height: 48px;
+
+			background: #02c39a;
 			&:hover, &:focus {
 				background: #1fe8b8;
 			}

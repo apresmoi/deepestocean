@@ -349,18 +349,30 @@ export function Game() {
 				switch (code) {
 					case "Z":
 						shipState.leftCannon.on = !shipState.leftCannon.on;
+						triggerEvent(
+							shipState.leftCannon.on ? "deck_enabled" : "deck_disabled"
+						);
 						triggerEvent("update", serialize());
 						break;
 					case "X":
 						shipState.rightCannon.on = !shipState.rightCannon.on;
+						triggerEvent(
+							shipState.rightCannon.on ? "deck_enabled" : "deck_disabled"
+						);
 						triggerEvent("update", serialize());
 						break;
 					case "C":
 						shipState.lights.on = !shipState.lights.on;
+						triggerEvent(
+							shipState.lights.on ? "deck_enabled" : "deck_disabled"
+						);
 						triggerEvent("update", serialize());
 						break;
 					case "V":
 						shipState.torpedos.on = !shipState.torpedos.on;
+						triggerEvent(
+							shipState.torpedos.on ? "deck_enabled" : "deck_disabled"
+						);
 						triggerEvent("update", serialize());
 						break;
 				}
@@ -377,11 +389,13 @@ export function Game() {
 		players[id].dy = direction.dy;
 	}
 
-	function playerDeckChange(id: string, deck: number) {
+	function playerDeckChange(id: string, deck: number): boolean {
 		if (!Object.values(players).some((p) => p.deck === deck)) {
 			players[id].deck = deck;
 			triggerEvent("update", serialize());
+			return true;
 		}
+		return false;
 	}
 
 	function removePlayer(id: string) {

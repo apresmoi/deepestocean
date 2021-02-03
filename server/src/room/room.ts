@@ -57,6 +57,7 @@ export function Room(id: string, name: string, mainSocket: SocketIO.Namespace) {
 		);
 
 		socket.on("start_game", () => {
+			console.log("game_started");
 			mainSocket.emit("game_started");
 			game.init();
 		});
@@ -74,7 +75,9 @@ export function Room(id: string, name: string, mainSocket: SocketIO.Namespace) {
 
 		socket.on("request_deck_change", (payload: IDeckChange) => {
 			console.log("deck_change", payload.deck);
-			game.playerDeckChange(socket.id, payload.deck);
+			if (game.playerDeckChange(socket.id, payload.deck)) {
+				socket.emit("deck_changed", { id: socket.id, deck: payload.deck });
+			}
 		});
 
 		socket.on("disconnect", () => {
@@ -93,6 +96,14 @@ export function Room(id: string, name: string, mainSocket: SocketIO.Namespace) {
 
 	game.subscribeEvent("game_end", (payload) => {
 		mainSocket.emit("game_end", payload);
+	});
+
+	game.subscribeEvent("deck_disabled", () => {
+		mainSocket.emit("deck_disabled");
+	});
+
+	game.subscribeEvent("deck_enabled", () => {
+		mainSocket.emit("deck_enabled");
 	});
 
 	return {

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useKeyPress } from "@hooks";
 import { useEvents } from "../Events";
+import { useSound } from "@assets";
 
 type IGameStoreContext = {};
 
@@ -11,7 +12,11 @@ export function useGame() {
 }
 
 export function GameStore(props: React.PropsWithChildren<{}>) {
-	const { triggerEvent } = useEvents();
+	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
+
+	const deckChangeSound = useSound("ChangeDeck", { volume: 0.1 });
+	const turnOnSound = useSound("Turnon", { volume: 0.1 });
+	const turnOffSound = useSound("Turnoff", { volume: 0.1 });
 
 	const arrowLeft = useKeyPress(["ArrowLeft", "a", "A"]);
 	const arrowRight = useKeyPress(["ArrowRight", "d", "D"]);
@@ -53,6 +58,26 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 	React.useEffect(() => {
 		if (deck !== null) triggerEvent("deck_change", { deck: deck - 1 });
 	}, [deck, triggerEvent]);
+
+	React.useEffect(() => {
+		const handleDeckChange = () => {
+			deckChangeSound?.play();
+		};
+		const handleDeckEnabled = () => {
+			turnOffSound?.play();
+		};
+		const handleDeckDisabled = () => {
+			turnOnSound?.play();
+		};
+		subscribeEvent("deck_changed", handleDeckChange);
+		subscribeEvent("deck_enabled", handleDeckEnabled);
+		subscribeEvent("deck_disabled", handleDeckDisabled);
+		return () => {
+			unsubscribeEvent("deck_changed", handleDeckChange);
+			unsubscribeEvent("deck_enabled", handleDeckEnabled);
+			unsubscribeEvent("deck_disabled", handleDeckDisabled);
+		};
+	}, [subscribeEvent, unsubscribeEvent]);
 
 	const contextValue = React.useMemo(() => ({}), []);
 

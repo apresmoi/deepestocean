@@ -78,7 +78,7 @@ export function UI() {
 			}
 		});
 		return decks;
-	}, [playerList, data?.ship.state]);
+	}, [playerList, data?.ship.state, data?.self.name]);
 
 	if (!data) return null;
 	return (

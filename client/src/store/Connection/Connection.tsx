@@ -64,8 +64,8 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 	const [name, setName] = React.useState(localStorage.getItem("name") || "");
 	const [rooms, setRooms] = React.useState([]);
 
-	const joinSound = useSound('PlayerJoin')
-	const leaveSound = useSound('PlayerLeave')
+	const joinSound = useSound("PlayerJoin");
+	const leaveSound = useSound("PlayerLeave");
 
 	const changeName = React.useCallback((name: string) => {
 		localStorage.setItem("name", name);
@@ -113,13 +113,13 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 			socket.on("player_join", (payload: PlayerJoinPayload) => {
 				// console.log("server > client: player_join", payload);
 				triggerEvent("player_join", payload);
-				joinSound?.play()
+				joinSound?.play();
 			});
 
 			socket.on("player_leave", (payload: PlayerLeavePayload) => {
 				// console.log("server > client: player_leave", payload);
 				triggerEvent("player_leave", payload);
-				leaveSound?.play()
+				leaveSound?.play();
 			});
 
 			socket.on("player_kicked", () => {
@@ -130,6 +130,16 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 
 			socket.on("game_started", () => {
 				triggerEvent("game_started");
+			});
+
+			socket.on("deck_changed", () => {
+				triggerEvent("deck_changed");
+			});
+			socket.on("deck_enabled", () => {
+				triggerEvent("deck_enabled");
+			});
+			socket.on("deck_disabled", () => {
+				triggerEvent("deck_disabled");
 			});
 
 			socket.on("update", (payload: UpdatePayload) => {

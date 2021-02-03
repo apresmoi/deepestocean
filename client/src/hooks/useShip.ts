@@ -3,37 +3,41 @@ import { useEvents } from "@store";
 import { UpdatePayload } from "store/Connection/types";
 import { IShip, IShipDecks } from "store/Game/types";
 import { colors } from "../const";
+import isEqual from "lodash.isequal";
 
-export function useShip(callback: (ship: IShip) => void) {
+export function useShip() {
 	const { subscribeEvent, unsubscribeEvent } = useEvents();
 
-	React.useEffect(() => {
-		if (callback) {
-			const handleUpdate = (payload: UpdatePayload) => {
-				const decks: IShipDecks = {
-					cannonRight: undefined,
-					cannonLeft: undefined,
-					navigation: undefined,
-					lights: undefined,
-					torpedos: undefined,
-					engineering: undefined,
-				};
-				Object.values(payload.players).forEach((player, i) => {
-					if (player.deck === 0) decks.navigation = colors[i];
-					if (player.deck === 1) decks.cannonLeft = colors[i];
-					if (player.deck === 2) decks.cannonRight = colors[i];
-					if (player.deck === 3) decks.lights = colors[i];
-					if (player.deck === 4) decks.torpedos = colors[i];
-					if (player.deck === 5) decks.engineering = colors[i];
+	const [ship, setShip] = React.useState<IShip>();
 
-				});
-				callback({ ...payload.ship, decks });
+	React.useEffect(() => {
+		const handleUpdate = (payload: UpdatePayload) => {
+			const decks: IShipDecks = {
+				cannonRight: undefined,
+				cannonLeft: undefined,
+				navigation: undefined,
+				lights: undefined,
+				torpedos: undefined,
+				engineering: undefined,
 			};
-			subscribeEvent("update", handleUpdate);
-			return () => {
-				unsubscribeEvent("update", handleUpdate);
-			};
-		}
-		return () => null;
-	}, [subscribeEvent, unsubscribeEvent, callback]);
+			Object.values(payload.players).forEach((player, i) => {
+				if (player.deck === 0) decks.navigation = colors[i];
+				if (player.deck === 1) decks.cannonLeft = colors[i];
+				if (player.deck === 2) decks.cannonRight = colors[i];
+				if (player.deck === 3) decks.lights = colors[i];
+				if (player.deck === 4) decks.torpedos = colors[i];
+				if (player.deck === 5) decks.engineering = colors[i];
+			});
+
+			const newShip = { ...payload.ship, decks };
+
+			if (!isEqual(ship, newShip)) setShip(newShip);
+		};
+		subscribeEvent("update", handleUpdate);
+		return () => {
+			unsubscribeEvent("update", handleUpdate);
+		};
+	}, [subscribeEvent, unsubscribeEvent, ship]);
+
+	return ship;
 }

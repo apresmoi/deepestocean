@@ -8,6 +8,7 @@ import { useConnection, useEvents } from "@store";
 import { IPlayer } from "store/Game/types";
 
 import debounce from "lodash.debounce";
+import { useSound } from "@assets";
 
 export function Lobby() {
 	const { connected } = useConnection();
@@ -16,8 +17,10 @@ export function Lobby() {
 	const history = useHistory();
 	const { triggerEvent, subscribeEvent, unsubscribeEvent } = useEvents();
 
+	const buttonSound = useSound("Turnon", { volume: 0.1 });
+
 	React.useEffect(() => {
-		console.log('init')
+		console.log("init");
 		const handleGameStart = () => {
 			history.push("/play");
 		};
@@ -27,13 +30,18 @@ export function Lobby() {
 		};
 	}, [subscribeEvent, unsubscribeEvent, history]);
 
-	const handlePlay = React.useCallback(
+	const debouncedHandlePlay = React.useCallback(
 		debounce(() => {
 			triggerEvent("start_game");
 			history.push("/play");
-		}, 1000),
+		}, 10),
 		[history, triggerEvent]
 	);
+
+	const handlePlay = React.useCallback(() => {
+		buttonSound?.play();
+		debouncedHandlePlay();
+	}, [debouncedHandlePlay, buttonSound]);
 
 	const handleKickPlayer = React.useCallback(
 		(player: IPlayer) => {
@@ -43,6 +51,7 @@ export function Lobby() {
 	);
 
 	const handleExit = React.useCallback(() => {
+		buttonSound?.play();
 		history.push("/rooms");
 	}, [history]);
 
@@ -56,9 +65,9 @@ export function Lobby() {
 		<Container>
 			<div className="lobby">
 				<div className="lobby-content">
-				<img src="/images/instructions2.svg" height={36}/>
+					<img src="/images/instructions2.svg" height={36} />
 					<h1>Get ready to start</h1>
-						<div className="table">
+					<div className="table">
 						<table>
 							<thead>
 								<tr>

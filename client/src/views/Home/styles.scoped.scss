@@ -1,39 +1,61 @@
 .home {
-	margin: auto;
-	color: #fdf2ce;
 	display: flex;
-	justify-content: center;
 	flex-direction: column;
- .content-container {
-	background: #13354a;
-	 padding: 0 2.2rem 2.2rem;
-	 text-align: center;
- }
+	justify-content: center;
+
+	margin: auto;
+
+	color: #fdf2ce;
+
+	.content-container {
+		padding: 0 2.2rem 2.2rem;
+
+		text-align: center;
+
+		background: #13354a;
+	}
 	&__title {
+		margin-bottom: 2rem;
+
 		font-size: 3rem;
 		text-align: center;
-		margin-bottom: 2rem;
 	}
 
 	&__label {
 		margin-top: 40px;
 		margin-bottom: 15px;
+
 		font-size: 1.6rem;
 		text-align: center;
 	}
 
 	&__button {
-		border: 1px solid #02c39a;
-		padding: 10px 15px 12px;
-		min-width: 190px;
-		text-align: center;
 		align-self: center;
+
 		margin-top: 2rem;
+		padding: 10px 15px 12px;
+
+		min-width: 190px;
+
+		border: 1px solid #02c39a;
+
 		font-size: 1.6rem;
+		text-align: center;
 
 		&:hover {
-			background-color: #02c39a;
 			cursor: pointer;
+
+			background-color: #02c39a;
 		}
+	}
+
+	.img-1 {
+		min-height: 50px;
+	}
+	.img-2 {
+		min-height: 40px;
+	}
+	.img-3 {
+		min-height: 80px;
 	}
 }

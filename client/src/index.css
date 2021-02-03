@@ -1,3 +1,8 @@
+* {
+	font-family: "VT323", monospace;
+	font-size: 20px;
+}
+
 html {
 	background: #031927;
 }

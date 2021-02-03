@@ -5,4 +5,11 @@
 
 		transition: 2s ease-out;
 	}
+
+	.lights {
+		-webkit-transition: -webkit-transform 0.05s ease-out;
+		-moz-transition: -moz-transform 0.05s ease-out;
+		-o-transition: -o-transform 0.05s ease-out;
+		transition: transform 0.05s ease-out;
+	}
 }

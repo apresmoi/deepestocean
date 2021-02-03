@@ -10,7 +10,7 @@ import { useHistory } from "react-router-dom";
 import { useDisableGoBack, useGameEnd } from "@hooks";
 
 import "./styles.scoped.scss";
-import { Background1, Background2, Background3 } from "@components/Background";
+import { Background } from "@components/Background";
 import { Effects } from "@components/Effects";
 import { Cards } from "@components/Cards";
 import { useSound } from "@assets";
@@ -21,15 +21,14 @@ export function Game() {
 
 	const gameEnd = useGameEnd();
 
-	const ambientSound  = useSound("Ambient", true);
+	const ambientSound = useSound("Ambient", { loop: true });
 
 	React.useEffect(() => {
-		console.log(ambientSound)
-		ambientSound?.play()
+		ambientSound?.play();
 		return () => {
-			ambientSound?.stop()
-		}
-	}, [ambientSound])
+			ambientSound?.stop();
+		};
+	}, [ambientSound]);
 
 	React.useEffect(() => {
 		if (!connected) history.push("/rooms");
@@ -47,9 +46,7 @@ export function Game() {
 				<button onClick={handleLeave}>Leave game</button>
 				<GameCanvas>
 					<GameCamera>
-						<Background1 />
-						<Background2 />
-						<Background3 />
+						<Background />
 						<Fish />
 						<Effects />
 						<Ship />

@@ -15,6 +15,7 @@ import {
 	IObjective,
 	IPlayer,
 } from "../types";
+import { round } from "../utils";
 
 export const mapSize: Size = new Size(0, 0, 3000, 6000);
 export const startPosition: Vector = new Vector(200, 200);
@@ -402,7 +403,7 @@ export function Game() {
 			const interval = setTimeout(() => {
 				leftCannonCooldown = false;
 				clearInterval(interval);
-			}, 100);
+			}, 300);
 			const angle = shipState.leftCannon.angle;
 			const projectile = Bodies.circle(
 				ship.position.x - 105,
@@ -481,7 +482,7 @@ export function Game() {
 			const interval = setTimeout(() => {
 				rightCannonCooldown = false;
 				clearInterval(interval);
-			}, 250);
+			}, 500);
 			const angle = shipState.rightCannon.angle;
 			const projectile = Bodies.circle(
 				ship.position.x + 110,
@@ -769,8 +770,8 @@ export function Game() {
 		return {
 			seconds,
 			ship: {
-				x: ship.position.x,
-				y: ship.position.y,
+				x: round(ship.position.x),
+				y: round(ship.position.y),
 				radius: ship.circleRadius,
 				state: shipState,
 			},
@@ -782,17 +783,17 @@ export function Game() {
 				.map((e) => ({
 					id: e.id,
 					type: e.type,
-					x: e.body.position.x,
-					y: e.body.position.y,
+					x: round(e.body.position.x),
+					y: round(e.body.position.y),
 					radius: e.body.circleRadius,
-					angle: e.angle,
+					angle: round(e.angle),
 				})),
 			fishes: fishes
 				.filter((f) => f.mounted)
 				.map((fish) => ({
 					id: fish.id,
-					x: fish.body.position.x,
-					y: fish.body.position.y,
+					x: round(fish.body.position.x),
+					y: round(fish.body.position.y),
 					radius: fish.body.circleRadius,
 					type: fish.type,
 					killed: fish.killed,

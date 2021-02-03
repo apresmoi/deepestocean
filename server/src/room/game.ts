@@ -469,7 +469,7 @@ export function Game() {
 
 			Body.setVelocity(
 				projectile,
-				new Vector(-15, 0).rotate(((angle + 40) * Math.PI) / 180)
+				new Vector(-20, 0).rotate(((angle + 40) * Math.PI) / 180)
 			);
 			Body.setVelocity(
 				projectile2,
@@ -499,8 +499,8 @@ export function Game() {
 			}, 500);
 			const angle = shipState.rightCannon.angle;
 			const projectile = Bodies.circle(
-				ship.position.x + 110,
-				ship.position.y - 15,
+				ship.position.x + 170,
+				ship.position.y - 17,
 				5,
 				{
 					isSensor: true,
@@ -513,8 +513,8 @@ export function Game() {
 				}
 			);
 			const projectile2 = Bodies.circle(
-				ship.position.x + 110,
-				ship.position.y - 4,
+				ship.position.x + 170,
+				ship.position.y - 2,
 				5,
 				{
 					isSensor: true,
@@ -548,12 +548,12 @@ export function Game() {
 
 			Body.setVelocity(
 				projectile,
-				new Vector(5, 0).rotate(((angle - 16) * Math.PI) / 180)
+				new Vector(10, 0).rotate(((angle - 16) * Math.PI) / 180)
 			);
 
 			Body.setVelocity(
 				projectile2,
-				new Vector(5, 0).rotate(((angle + 18) * Math.PI) / 180)
+				new Vector(10, 0).rotate(((angle + 18) * Math.PI) / 180)
 			);
 
 			setTimeout(() => {

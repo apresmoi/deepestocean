@@ -6,7 +6,7 @@ import "./styles.scoped.scss";
 export function Home() {
 	const history = useHistory();
 
-	const buttonSound = useSound("Turnon");
+	const buttonSound = useSound("Turnon", { volume: 0.1 });
 
 	const handleClick = React.useCallback(() => {
 		buttonSound?.play();
@@ -18,8 +18,8 @@ export function Home() {
 			<div className="home__title">Deepest Ocean</div>
 			<div className="content-container">
 				<div className="home__label">
-					There are 3 levels deep in the ocean:<br/>
-					- You'll be assigned 3 random creatures to chase in each level
+					There are 3 levels deep in the ocean:
+					<br />- You'll be assigned 3 random creatures to chase in each level
 				</div>
 				<img className="img-1" src="/images/instructions1.svg" alt="" />
 				<div className="home__label">

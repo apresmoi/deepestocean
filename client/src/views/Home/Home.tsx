@@ -9,7 +9,8 @@ export function Home() {
 			<div className="home__title">Deepest Ocean</div>
 			<div className="content-container">
 				<div className="home__label">
-					- You'll be assigned 3 random creatures to find in the ocean
+					There are 3 levels deep in the ocean:<br/>
+					- You'll be assigned 3 random creatures to chase in each level
 				</div>
 				<img src="/images/instructions1.svg" />
 				<div className="home__label">

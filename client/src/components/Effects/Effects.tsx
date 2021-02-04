@@ -23,10 +23,10 @@ export function Effects() {
 				<>
 					<defs>
 						<radialGradient id="targetCircle">
-							<stop offset="0%" stopColor="red" stopOpacity={0} />
-							<stop offset="80%" stopColor="red" stopOpacity={0} />
-							<stop offset="85%" stopColor="red" stopOpacity={0.3} />
-							<stop offset="100%" stopColor="red" stopOpacity={0} />
+							<stop offset="0%" stopColor="#70ee49" stopOpacity={0} />
+							<stop offset="80%" stopColor="#70ee49" stopOpacity={0} />
+							<stop offset="85%" stopColor="#70ee49" stopOpacity={0.3} />
+							<stop offset="100%" stopColor="#70ee49" stopOpacity={0} />
 						</radialGradient>
 					</defs>
 					<path

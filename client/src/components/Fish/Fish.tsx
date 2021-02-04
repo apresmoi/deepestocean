@@ -42,6 +42,7 @@ export function Fish() {
 								transform={`translate(${f.x}, ${f.y}) scale(${f.radius / 100})`}
 							>
 								{<FishCompo />}
+								{f.targetted && <Aim />}
 							</g>
 						);
 					})}

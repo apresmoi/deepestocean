@@ -596,10 +596,7 @@ export function Game() {
 			torpedoTriggerCooldown = undefined;
 		}, 500);
 
-		console.log("fireTorpedo execute");
-
 		if (!torpedoTargetting) {
-			console.log("fireTorpedo start targetting");
 			torpedoTargetting = true;
 			shipState.torpedos.targetting = true;
 
@@ -626,7 +623,6 @@ export function Game() {
 					);
 
 					torpedoSensor.circleRadius = 10;
-					console.log("fireTorpedo failed");
 				}
 			}, 10);
 
@@ -637,7 +633,6 @@ export function Game() {
 			shipState.torpedos.targetting = false;
 			torpedoCooldownStartedAt = timeElapsed();
 
-			console.log("fireTorpedo fire");
 			torpedoTargetting = false;
 
 			fishes.forEach((fish) => {
@@ -648,7 +643,6 @@ export function Game() {
 						torpedoSensor.circleRadius + 50
 					)
 				) {
-					console.log("sending torpedo");
 					const torpedoId = effectCount++;
 					const torpedo = Bodies.circle(
 						ship.position.x + 95,
@@ -694,7 +688,7 @@ export function Game() {
 									Vector.fromMatter(fish.body.position)
 										.substract(Vector.fromMatter(torpedo.position))
 										.normalize()
-										.multiply(1)
+										.multiply(5)
 								);
 							} else {
 								torpedo.plugin.afterCollision();
@@ -832,10 +826,7 @@ export function Game() {
 			fishes[bodyA.plugin.index].invertDirection();
 		}
 		if (bodyA.plugin?.isMonster && bodyB.plugin?.isTorpedo) {
-			console.log("torpedo collided");
 			if (bodyB.plugin.fishId === bodyA.plugin.id) {
-				console.log("torpedo found fish");
-
 				const index = objectives.findIndex(
 					(obj) => obj.type === bodyA.plugin.type
 				);

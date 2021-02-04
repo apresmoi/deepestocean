@@ -246,7 +246,14 @@ export function UI() {
 			<g transform="translate(-124,0)">
 				<circle cx="700.37" cy="998.5" r="39.94" fill="#0b132b" />
 
-				<g opacity={decks.torpedos.disabled ? 0.3 : 1}>
+				<g
+					opacity={
+						decks.torpedos.disabled ||
+						(decks.torpedos.cooldown && decks.torpedos.cooldown > 0)
+							? 0.3
+							: 1
+					}
+				>
 					<path
 						d="M738.81 998.5a38.38 38.38 0 11-.46-6 38.8 38.8 0 01.46 6 1.5 1.5 0 003 0 41.53 41.53 0 10-.54 6.6 42.89 42.89 0 00.54-6.6 1.5 1.5 0 00-3 0z"
 						fill="#fdf2ce"
@@ -266,7 +273,12 @@ export function UI() {
 						>
 							<line stroke="white" x1="0" x2="39.94" />
 						</g>
-						<text textAnchor="middle" fill="white" fontWeight="600" fontSize="20">
+						<text
+							textAnchor="middle"
+							fill="white"
+							fontWeight="600"
+							fontSize="20"
+						>
 							{(Math.trunc((decks.torpedos.cooldown || 0) * 10) / 10).toFixed(
 								1
 							)}

@@ -12,7 +12,9 @@ export type FishType =
 	| "Nautilus"
 	| "SixgillShark"
 	| "SnipeEel"
-	| "VampireSquid";
+	| "VampireSquid"
+	| "BadGuy1"
+	| "BadGuy2";
 
 export type EffectType =
 	| "LEFTCANNON"

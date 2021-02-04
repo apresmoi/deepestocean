@@ -85,6 +85,8 @@ const levelWalls = [
 	}),
 ];
 
+const badGuys: FishType[] = ["BadGuy1", "BadGuy2"];
+
 const fishTypes: FishType[] = [
 	"GiantSquid", //300 - 600
 	"SnipeEel", // 300 - 600
@@ -105,14 +107,14 @@ const fishByLevel = [
 	fishTypes.slice(8),
 ];
 
-function getRandomFish(level: number): IInternalFish {
+function getRandomBadGuy(level: number): IInternalFish {
 	const size = Math.random() * 40 + 40;
 
 	const x = Math.random() * mapSize.width;
 	const y = Math.random() * [800, 1200, 2000][level] + [100, 1800, 4000][level];
 
-	const index = Math.round(Math.random() * (fishByLevel[level].length - 1));
-	const type = fishByLevel[level][index];
+	const index = Math.round(Math.random() * (badGuys.length - 1));
+	const type = badGuys[index];
 
 	const fish = Bodies.circle(x, y, size, {
 		mass: 0,
@@ -164,8 +166,69 @@ function getRandomFish(level: number): IInternalFish {
 	};
 }
 
+function getRandomFish(level: number): IInternalFish {
+	const size = Math.random() * 40 + 40;
+
+	const x = Math.random() * mapSize.width;
+	const y = Math.random() * [800, 1200, 2000][level] + [100, 1800, 4000][level];
+
+	const index = Math.round(Math.random() * (fishByLevel[level].length - 1));
+	const type = fishByLevel[level][index];
+
+	const fish = Bodies.circle(x, y, size, {
+		mass: 0,
+		collisionFilter: {
+			category: CollisionCategories.FISH,
+		},
+		frictionAir: 0.1,
+		inertia: Infinity,
+		plugin: {
+			type,
+			isMonster: true,
+			canDoDamage: false,
+		},
+	});
+
+	let direction = new Vector(
+		Math.random() - 0.5,
+		Math.random() - 0.5
+	).normalize();
+
+	return {
+		id: 0,
+		type,
+		body: fish,
+		mounted: false,
+		killed: false,
+		invertDirection: () => {
+			direction = direction.invert();
+		},
+		isTargetted: (sensor: Vector, minRadius: number, maxRadius: number) => {
+			const d = distance(fish.position, sensor);
+			return d >= minRadius && d <= maxRadius;
+		},
+		updater: () => {
+			if (Math.random() > 0.9) {
+				if (Math.random() > 0.98) {
+					direction = new Vector(
+						Math.random() - 0.5,
+						Math.random() - 0.5
+					).normalize();
+				}
+				Body.setPosition(
+					fish,
+					Vector.fromMatter(fish.position).add(direction.multiply(20))
+				);
+				// Body.applyForce(fish, fish.position, direction);
+			}
+		},
+	};
+}
+
 function getRandomObjectives(fishes) {
-	const availableTypes = fishes.map((fish) => fish.type);
+	const availableTypes = fishes
+		.map((fish) => fish.type)
+		.filter((x) => !badGuys.includes(x));
 	const types = [];
 	while (types.length < 3) {
 		const type = Math.round(Math.random() * (availableTypes.length - 1));
@@ -803,8 +866,19 @@ export function Game() {
 
 		const newFishes = [];
 
-		while (newFishes.length < 10) {
+		while (
+			newFishes.length < 6 ||
+			newFishes.map((f) => f.type).filter((x, i, arr) => arr.indexOf(x) === i)
+				.length < 3
+		) {
 			const fish = getRandomFish(level);
+			fish.id = fishCount++;
+			fish.body.plugin.id = fish.id;
+			if (fish.type) newFishes.push(fish);
+		}
+
+		while (newFishes.length < 15) {
+			const fish = getRandomBadGuy(level);
 			fish.id = fishCount++;
 			fish.body.plugin.id = fish.id;
 			if (fish.type) newFishes.push(fish);

@@ -10,3 +10,5 @@ export { ReactComponent as Nautilus } from "./images/nautilus.svg";
 export { ReactComponent as SixgillShark } from "./images/sixgill-shark.svg";
 export { ReactComponent as SnipeEel } from "./images/snipe-eel.svg";
 export { ReactComponent as VampireSquid } from "./images/vampire-squid.svg";
+export { ReactComponent as BadGuy1 } from "./images/malo1.svg";
+export { ReactComponent as BadGuy2 } from "./images/malo2.svg";

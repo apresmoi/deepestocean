@@ -44,6 +44,7 @@ export type IShip = {
 			power: number;
 			targetting: boolean;
 			cooldown: number;
+			amount: number;
 		};
 		health: number;
 	};

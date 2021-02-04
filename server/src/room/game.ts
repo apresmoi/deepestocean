@@ -651,7 +651,12 @@ export function Game() {
 	let torpedoSensor: Body = null;
 	let torpedoTargetting = false;
 	function fireTorpedo() {
-		if (torpedoTriggerCooldown || torpedoCooldown || !shipState.torpedos.on)
+		if (
+			torpedoTriggerCooldown ||
+			torpedoCooldown ||
+			!shipState.torpedos.on ||
+			shipState.torpedos.amount <= 0
+		)
 			return null;
 
 		torpedoTriggerCooldown = setTimeout(() => {
@@ -704,8 +709,10 @@ export function Game() {
 						torpedoSensor.position,
 						torpedoSensor.circleRadius - 50,
 						torpedoSensor.circleRadius + 50
-					)
+					) &&
+					shipState.torpedos.amount > 0
 				) {
+					shipState.torpedos.amount--;
 					const torpedoId = effectCount++;
 					const torpedo = Bodies.circle(
 						ship.position.x + 95,
@@ -858,6 +865,7 @@ export function Game() {
 	}
 
 	function changeLevel() {
+		shipState.torpedos.amount = 3;
 		if (level === 1) {
 			World.remove(world, levelWalls[0]);
 		} else if (level === 2) {

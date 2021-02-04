@@ -1,3 +1,4 @@
+import { useSettings } from "@store";
 import debounce from "lodash.debounce";
 import * as React from "react";
 
@@ -33,21 +34,26 @@ export const useSound = (
 		volume?: number;
 	}
 ): AudioHelper | undefined => {
+	const { sound: soundActivated } = useSettings();
+
 	return React.useMemo(() => {
 		//@ts-ignore
 		const sound: HTMLAudioElement | undefined = sounds[name];
 		if (sound)
 			return {
 				play: () => {
-					sound.loop = options?.loop || false;
-					sound.volume = options?.volume || 1;
-					return sound.play();
+					if (soundActivated) {
+						sound.loop = options?.loop || false;
+						sound.volume = options?.volume || 1;
+						return sound.play();
+					}
+					return new Promise(() => {});
 				},
 				stop: () => {
 					sound.pause();
 				},
 			};
-	}, [name, options]);
+	}, [name, options, soundActivated]);
 };
 
 export const useRandomSound = (
@@ -57,6 +63,8 @@ export const useRandomSound = (
 		volume?: number;
 	}
 ): Pick<AudioHelper, "play"> => {
+	const { sound: soundActivated } = useSettings();
+
 	return React.useMemo(() => {
 		const randomAudio = () => {
 			const rnd = Math.floor(Math.random() * sounds.length);
@@ -65,13 +73,16 @@ export const useRandomSound = (
 
 		return {
 			play: () => {
-				const audio = randomAudio();
-				audio.loop = options?.loop || false;
-				audio.volume = options?.volume || 1;
-				return audio.play();
+				if (soundActivated) {
+					const audio = randomAudio();
+					audio.loop = options?.loop || false;
+					audio.volume = options?.volume || 1;
+					return audio.play();
+				}
+				return new Promise(() => {});
 			},
 		};
-	}, [sounds, options]);
+	}, [sounds, options, soundActivated]);
 };
 
 export const useKeystrokeSound = (volume: number) => {

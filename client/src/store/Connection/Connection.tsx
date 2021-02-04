@@ -2,7 +2,6 @@ import { useSound } from "@assets";
 import * as React from "react";
 import { useHistory } from "react-router-dom";
 import io from "socket.io-client";
-import { IPlayer } from "store/Game/types";
 import { useEvents } from "../Events";
 import {
 	PlayerJoinPayload,
@@ -66,6 +65,7 @@ export function ConnectionStore(props: React.PropsWithChildren<{}>) {
 
 	const joinSound = useSound("PlayerJoin");
 	const leaveSound = useSound("PlayerLeave");
+
 
 	const changeName = React.useCallback((name: string) => {
 		localStorage.setItem("name", name);

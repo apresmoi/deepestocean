@@ -14,7 +14,5 @@ export function GameCamera(props: React.PropsWithChildren<{}>) {
 	if (x < -3000 + size.width) x = -3000 + size.width;
 	if (y < -6000 + size.height - 150) y = -6000 + size.height - 150;
 
-	console.log(x,y)
-
 	return <g transform={`translate(${x}, ${y})`}>{props.children}</g>;
 }

@@ -60,8 +60,6 @@ export function Effects() {
 	return (
 		<g className="effects">
 			{effects.map((e, i) => {
-				console.log(e);
-
 				const EffectComponent = getEffect(e.type, e);
 				if (!EffectComponent) return null;
 

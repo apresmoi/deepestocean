@@ -77,7 +77,13 @@ export function GameStore(props: React.PropsWithChildren<{}>) {
 			unsubscribeEvent("deck_enabled", handleDeckEnabled);
 			unsubscribeEvent("deck_disabled", handleDeckDisabled);
 		};
-	}, [subscribeEvent, unsubscribeEvent]);
+	}, [
+		subscribeEvent,
+		unsubscribeEvent,
+		deckChangeSound,
+		turnOffSound,
+		turnOnSound,
+	]);
 
 	const contextValue = React.useMemo(() => ({}), []);
 

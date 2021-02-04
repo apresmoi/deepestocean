@@ -6,3 +6,14 @@
 .st0p{fill:none;stroke:#fdf2ce;stroke-miterlimit:10}
 .st1p{fill:#fdf2ce}
 .st3p{font-size:15px}
+
+
+.deck-controls {
+	overflow: visible;
+	text {
+		font-size: 1.2rem;
+		&:last-child {
+			font-size: 1.5rem;
+		}
+	}
+}

@@ -1272,6 +1272,7 @@ export function UI() {
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 70.85 70.86"
 					onClick={() => settings.toggleSound()}
+					className="sound"
 				>
 					<circle
 						cx="35.39"

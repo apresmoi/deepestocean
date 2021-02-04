@@ -41,6 +41,8 @@ export function UI() {
 			torpedos: {
 				color: "",
 				disabled: !data?.ship.state.torpedos.on,
+				cooldown: data?.ship.state.torpedos.cooldown,
+				targetting: data?.ship.state.torpedos.targetting,
 				player: "",
 			},
 			engineering: {
@@ -243,6 +245,7 @@ export function UI() {
 			</g>
 			<g transform="translate(-124,0)">
 				<circle cx="700.37" cy="998.5" r="39.94" fill="#0b132b" />
+
 				<g opacity={decks.torpedos.disabled ? 0.3 : 1}>
 					<path
 						d="M738.81 998.5a38.38 38.38 0 11-.46-6 38.8 38.8 0 01.46 6 1.5 1.5 0 003 0 41.53 41.53 0 10-.54 6.6 42.89 42.89 0 00.54-6.6 1.5 1.5 0 00-3 0z"
@@ -253,6 +256,24 @@ export function UI() {
 						fill="#ffc800"
 					/>
 				</g>
+
+				{decks.torpedos.cooldown && (
+					<g transform="translate(700.37, 998.5)">
+						<g
+							transform={` rotate(${
+								(360 - decks.torpedos.cooldown * 360) / 3 - 180
+							})`}
+						>
+							<line stroke="white" x1="0" x2="39.94" />
+						</g>
+						<text textAnchor="middle" fill="white" fontWeight="600" fontSize="20">
+							{(Math.trunc((decks.torpedos.cooldown || 0) * 10) / 10).toFixed(
+								1
+							)}
+						</text>
+					</g>
+				)}
+
 				<text
 					transform="translate(700 1059.78)"
 					font-size="16"

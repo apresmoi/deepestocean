@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Fishes from "./List";
 import { useFish } from "@hooks";
+import { Aim } from "./Aim";
 
 import "./styles.scoped.scss";
 
@@ -23,6 +24,7 @@ export function Fish() {
 								transform={`translate(${f.x}, ${f.y}) scale(${f.radius / 100})`}
 							>
 								{<FishCompo />}
+								{f.targetted && <Aim />}
 							</g>
 						);
 					})}

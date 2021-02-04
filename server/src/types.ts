@@ -1,3 +1,5 @@
+import { Vector } from "matter-js";
+
 export type FishType =
 	| "AnglerFish"
 	| "DragonFish"
@@ -16,7 +18,9 @@ export type EffectType =
 	| "LEFTCANNON"
 	| "LEFTCANNONB"
 	| "RIGHTCANNON"
-	| "RIGHTCANNONB";
+	| "RIGHTCANNONB"
+	| "TORPEDOTARGET"
+	| "TORPEDO";
 
 export type IInternalFish = {
 	id: number;
@@ -26,6 +30,11 @@ export type IInternalFish = {
 	killed: boolean;
 	updater: () => void;
 	invertDirection: () => void;
+	isTargetted: (
+		sensor: Vector,
+		minRadius: number,
+		maxRadius: number
+	) => boolean;
 };
 
 export type IObjective = {
@@ -40,6 +49,9 @@ export type IInternalEffect = {
 	body: Matter.Body;
 	mounted: boolean;
 	angle: number;
+	radius?: number;
+	updater?: () => void;
+	getAngle?: () => number;
 };
 
 export type IEffect = {

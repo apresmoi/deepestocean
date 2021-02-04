@@ -1,3 +1,4 @@
+import * as bodyParser from "body-parser";
 import {
 	Engine,
 	World,
@@ -5,6 +6,7 @@ import {
 	Body,
 	Bodies,
 	IEventCollision,
+	Vertices,
 } from "matter-js";
 import { Size, Vector } from "../math";
 import {
@@ -15,7 +17,7 @@ import {
 	IObjective,
 	IPlayer,
 } from "../types";
-import { round } from "../utils";
+import { distance, round } from "../utils";
 
 export const mapSize: Size = new Size(0, 0, 3000, 6000);
 export const startPosition: Vector = new Vector(200, 200);
@@ -36,6 +38,8 @@ enum CollisionCategories {
 	SHIP = 2,
 	FISH = 4,
 	PROJECTILE = 8,
+	TORPEDO = 16,
+	BAD_FISH = 32,
 }
 
 const walls = [
@@ -102,7 +106,7 @@ const fishByLevel = [
 ];
 
 function getRandomFish(level: number): IInternalFish {
-	const size = Math.random() * 60 + 40;
+	const size = Math.random() * 40 + 40;
 
 	const x = Math.random() * mapSize.width;
 	const y = Math.random() * [800, 1200, 2000][level] + [100, 1800, 4000][level];
@@ -137,6 +141,10 @@ function getRandomFish(level: number): IInternalFish {
 		killed: false,
 		invertDirection: () => {
 			direction = direction.invert();
+		},
+		isTargetted: (sensor: Vector, minRadius: number, maxRadius: number) => {
+			const d = distance(fish.position, sensor);
+			return d >= minRadius && d <= maxRadius;
 		},
 		updater: () => {
 			if (Math.random() > 0.9) {
@@ -256,6 +264,9 @@ export function Game() {
 		torpedos: {
 			on: false,
 			power: 100,
+			amount: 3,
+			cooldown: 0,
+			targetting: false,
 		},
 		health: 100,
 	};
@@ -569,9 +580,143 @@ export function Game() {
 		}
 	}
 
+	let torpedoTargetGrowInterval: NodeJS.Timeout;
+	let torpedoTriggerCooldown: NodeJS.Timeout;
+	let torpedoCooldownStartedAt = 0;
+	let torpedoCooldown: NodeJS.Timeout;
+	let targetEffect: IInternalEffect = null;
+	let torpedoSensor: Body = null;
+	let torpedoTargetting = false;
 	function fireTorpedo() {
-		if (shipState.torpedos.on) {
-			console.log("torpedo");
+		if (torpedoTriggerCooldown || torpedoCooldown || !shipState.torpedos.on)
+			return null;
+
+		torpedoTriggerCooldown = setTimeout(() => {
+			clearInterval(torpedoTriggerCooldown);
+			torpedoTriggerCooldown = undefined;
+		}, 500);
+
+		console.log("fireTorpedo execute");
+
+		if (!torpedoTargetting) {
+			console.log("fireTorpedo start targetting");
+			torpedoTargetting = true;
+			shipState.torpedos.targetting = true;
+
+			torpedoSensor = Bodies.circle(ship.position.x, ship.position.y, 10, {});
+
+			targetEffect = {
+				id: effectCount++,
+				body: torpedoSensor,
+				type: "TORPEDOTARGET",
+				mounted: true,
+				angle: 0,
+			};
+
+			torpedoTargetGrowInterval = setInterval(() => {
+				torpedoSensor.circleRadius += 2;
+				torpedoSensor.position = ship.position;
+
+				if (torpedoSensor.circleRadius >= 500) {
+					clearInterval(torpedoTargetGrowInterval);
+					torpedoTargetting = false;
+
+					effects = effects.filter(
+						(ef) => ef !== targetEffect && ef !== targetEffect
+					);
+
+					torpedoSensor.circleRadius = 10;
+					console.log("fireTorpedo failed");
+				}
+			}, 10);
+
+			effects.push(targetEffect);
+		} else {
+			clearInterval(torpedoTargetGrowInterval);
+
+			shipState.torpedos.targetting = false;
+			torpedoCooldownStartedAt = timeElapsed();
+
+			console.log("fireTorpedo fire");
+			torpedoTargetting = false;
+
+			fishes.forEach((fish) => {
+				if (
+					fish.isTargetted(
+						torpedoSensor.position,
+						torpedoSensor.circleRadius - 50,
+						torpedoSensor.circleRadius + 50
+					)
+				) {
+					console.log("sending torpedo");
+					const torpedoId = effectCount++;
+					const torpedo = Bodies.circle(
+						ship.position.x + 95,
+						ship.position.y + 60,
+						10,
+						{
+							isSensor: true,
+							plugin: {
+								isTorpedo: true,
+								fishId: fish.id,
+								afterCollision: () => {
+									World.remove(world, torpedo);
+									effects = effects.filter((e) => e.id !== torpedoId);
+								},
+							},
+						}
+					);
+
+					const torpedoEffect: IInternalEffect = {
+						id: torpedoId,
+						body: torpedo,
+						type: "TORPEDO",
+						mounted: true,
+						angle: 0,
+						getAngle: () => {
+							return (
+								(Vector.fromMatter(fish.body.position)
+									.substract(Vector.fromMatter(torpedo.position))
+									.angle() *
+									180) /
+									Math.PI +
+								-45 +
+								180
+							);
+						},
+						updater: () => {
+							if (
+								fish.body &&
+								fishes.find((f) => f.mounted && f.id === fish.body.plugin.id)
+							) {
+								Body.setVelocity(
+									torpedo,
+									Vector.fromMatter(fish.body.position)
+										.substract(Vector.fromMatter(torpedo.position))
+										.normalize()
+										.multiply(1)
+								);
+							} else {
+								torpedo.plugin.afterCollision();
+							}
+						},
+					};
+
+					World.add(world, torpedo);
+
+					effects.push(torpedoEffect);
+				}
+			});
+
+			effects = effects.filter(
+				(ef) => ef !== targetEffect && ef !== targetEffect
+			);
+
+			torpedoCooldown = setTimeout(() => {
+				clearTimeout(torpedoCooldown);
+				torpedoCooldownStartedAt = 0;
+				torpedoCooldown = undefined;
+			}, 3000);
 		}
 	}
 
@@ -617,6 +762,17 @@ export function Game() {
 	function shouldUpdate() {
 		Engine.update(engine);
 		fishes.forEach((fish) => fish.updater());
+		effects.forEach((effect) => {
+			if (effect.updater) effect.updater();
+		});
+
+		if (torpedoCooldown) {
+			const newCooldown = 3 - timeElapsed() + torpedoCooldownStartedAt;
+			shipState.torpedos.cooldown = newCooldown < 0 ? 0 : newCooldown;
+		} else {
+			shipState.torpedos.cooldown = 0;
+		}
+
 		if (shipState.health <= 0) {
 			return false;
 		}
@@ -626,7 +782,9 @@ export function Game() {
 
 	function timeElapsed(): number {
 		if (startTime)
-			return Math.trunc((new Date().getTime() - startTime.getTime()) / 1000);
+			return (
+				Math.trunc((new Date().getTime() - startTime.getTime()) / 100) / 10
+			);
 		return 0;
 	}
 
@@ -654,6 +812,7 @@ export function Game() {
 		while (newFishes.length < 10) {
 			const fish = getRandomFish(level);
 			fish.id = fishCount++;
+			fish.body.plugin.id = fish.id;
 			if (fish.type) newFishes.push(fish);
 		}
 
@@ -669,8 +828,32 @@ export function Game() {
 	}
 
 	function handleCollisionPair(bodyA: Matter.Body, bodyB: Matter.Body) {
-		if (bodyA.plugin?.isMonster) {
+		if (bodyA.plugin?.isMonster && !bodyB.plugin?.isTorpedo) {
 			fishes[bodyA.plugin.index].invertDirection();
+		}
+		if (bodyA.plugin?.isMonster && bodyB.plugin?.isTorpedo) {
+			console.log("torpedo collided");
+			if (bodyB.plugin.fishId === bodyA.plugin.id) {
+				console.log("torpedo found fish");
+
+				const index = objectives.findIndex(
+					(obj) => obj.type === bodyA.plugin.type
+				);
+				if (index !== -1) {
+					objectives[index].done = true;
+					objectives[index].amount++;
+				}
+
+				bodyB.plugin.afterCollision();
+
+				fishes[bodyA.plugin.index].killed = true;
+				setTimeout(() => {
+					if (fishes[bodyA.plugin.index]) {
+						fishes[bodyA.plugin.index].mounted = false;
+					}
+					World.remove(world, bodyA);
+				}, 1000);
+			}
 		}
 		if (
 			bodyA.plugin?.isMonster &&
@@ -697,15 +880,20 @@ export function Game() {
 			if (index !== -1) {
 				objectives[index].done = true;
 				objectives[index].amount++;
-				fishes[bodyA.plugin.index].killed = true;
-				setTimeout(() => {
-					if (fishes[bodyA.plugin.index]) {
-						fishes[bodyA.plugin.index].mounted = false;
-					}
-					World.remove(world, bodyA);
-				}, 1000);
 			}
+
+			fishes[bodyA.plugin.index].killed = true;
+			setTimeout(() => {
+				if (fishes[bodyA.plugin.index]) {
+					fishes[bodyA.plugin.index].mounted = false;
+				}
+				World.remove(world, bodyA);
+			}, 1000);
 		}
+	}
+
+	function handleCollisionEndPair(bodyA: Matter.Body, bodyB: Matter.Body) {
+		return;
 	}
 
 	function handleCollision(e: IEventCollision<any>) {
@@ -714,6 +902,14 @@ export function Game() {
 			const pair = pairs[i];
 			handleCollisionPair(pair.bodyA, pair.bodyB);
 			handleCollisionPair(pair.bodyB, pair.bodyA);
+		}
+	}
+	function handleCollisionEnd(e: IEventCollision<any>) {
+		const { pairs } = e;
+		for (let i = 0, j = pairs.length; i != j; ++i) {
+			const pair = pairs[i];
+			handleCollisionEndPair(pair.bodyA, pair.bodyB);
+			handleCollisionEndPair(pair.bodyB, pair.bodyA);
 		}
 	}
 
@@ -735,6 +931,7 @@ export function Game() {
 			startTime = new Date();
 
 			Events.on(engine, "collisionStart", handleCollision);
+			Events.on(engine, "collisionEnd", handleCollisionEnd);
 
 			interval = setInterval(() => {
 				if (shouldUpdate() || seconds !== timeElapsed()) {
@@ -800,7 +997,7 @@ export function Game() {
 					x: round(e.body.position.x),
 					y: round(e.body.position.y),
 					radius: e.body.circleRadius,
-					angle: round(e.angle),
+					angle: e.getAngle ? round(e.getAngle()) : round(e.angle),
 				})),
 			fishes: fishes
 				.filter((f) => f.mounted)
@@ -811,6 +1008,14 @@ export function Game() {
 					radius: fish.body.circleRadius,
 					type: fish.type,
 					killed: fish.killed,
+					targetted:
+						torpedoTargetting &&
+						torpedoSensor &&
+						fish.isTargetted(
+							torpedoSensor.position,
+							torpedoSensor.circleRadius - 50,
+							torpedoSensor.circleRadius + 50
+						),
 				})),
 		};
 	}

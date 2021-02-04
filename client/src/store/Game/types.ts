@@ -42,6 +42,8 @@ export type IShip = {
 		torpedos: {
 			on: boolean;
 			power: number;
+			targetting: boolean;
+			cooldown: number;
 		};
 		health: number;
 	};
@@ -68,9 +70,16 @@ export type IFish = {
 	y: number;
 	radius: number;
 	killed: boolean;
+	targetted: boolean;
 };
 
-export type EffectType = "LEFTCANNON" | "RIGHTCANNON";
+export type EffectType =
+	| "LEFTCANNON"
+	| "LEFTCANNONB"
+	| "RIGHTCANNON"
+	| "RIGHTCANNONB"
+	| "TORPEDOTARGET"
+	| "TORPEDO";
 
 export type IEffect = {
 	id: number;

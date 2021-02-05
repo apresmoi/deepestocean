@@ -52,8 +52,8 @@ export function Game() {
 						<Ship />
 					</GameCamera>
 					<UI />
-					<Cards />
 				</GameCanvas>
+				<Cards />
 				{gameEnd && (
 					<button onClick={() => history.push("/lobby")}>
 						Go back to lobby
